@@ -1,0 +1,14 @@
+# 统一按 LF 存储和检出。
+# 不设这个的话，Windows 上的 git 会在每次 git add 时刷一屏
+# "LF will be replaced by CRLF" 警告，PowerShell 还会把它渲染成红色报错。
+* text=auto eol=lf
+
+# 二进制文件不做换行符转换
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.zip  binary

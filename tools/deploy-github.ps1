@@ -6,6 +6,10 @@
       cd D:\yzy\files\website
       .\tools\deploy-github.ps1 -User 你的用户名 -Repo 仓库名
 
+  可选参数：
+      -UseSSH              用 git@github.com:... 而不是 https（需先配好 SSH 密钥）
+      -RemoteUrl <地址>    完全自定义远程地址（Gitee、自建 git 等）
+
   首次推送会要求登录 GitHub。推荐用浏览器登录（弹出的窗口点一下即可），
   不要用密码——GitHub 已经不支持密码推送了。
 #>
@@ -13,15 +17,29 @@
 param(
     [Parameter(Mandatory = $true)][string]$User,
     [Parameter(Mandatory = $true)][string]$Repo,
+    [string]$RemoteUrl,
+    [switch]$UseSSH,
     [string]$Message = "Update personal homepage"
 )
 
-$ErrorActionPreference = 'Stop'
+# 注意：这里**必须**是 Continue。
+# git 会把错误和进度（包括 push 的 "Enumerating objects..."）写到 stderr，
+# 而 PowerShell 5.1 会把原生命令的 stderr 包装成 NativeCommandError；
+# 一旦 ErrorActionPreference = 'Stop'，脚本会在这些地方被直接中断，
+# 连 2>$null 都挡不住。所以失败一律靠显式检查 $LASTEXITCODE 来判断。
+$ErrorActionPreference = 'Continue'
 
 function Info($m) { Write-Host "  $m" }
 function Ok($m)   { Write-Host "  [OK] $m"   -ForegroundColor Green }
 function Warn($m) { Write-Host "  [!]  $m"   -ForegroundColor Yellow }
 function Die($m)  { Write-Host "  [X]  $m"   -ForegroundColor Red; exit 1 }
+
+# 跑一条 git 命令：成功返回输出，失败返回 $null（不抛异常、不打印噪音）
+function GitQuiet([string[]]$GitArgs) {
+    $out = & git @GitArgs 2>$null
+    if ($LASTEXITCODE -ne 0) { return $null }
+    return $out
+}
 
 # ---------------------------------------------------------------- 环境检查
 $site = Split-Path -Parent $PSScriptRoot
@@ -73,33 +91,44 @@ Ok "提交署名：$name <$email>"
 # ---------------------------------------------------------------- 初始化
 if (-not (Test-Path (Join-Path $site '.git'))) {
     git init | Out-Null
-    git branch -M main
     Ok "已初始化 git 仓库"
-} else {
-    git branch -M main 2>$null | Out-Null
-    Info "已存在的 git 仓库，继续使用"
 }
+# 统一分支名为 main。新仓库还没有提交时 git branch -M 可能失败，忽略即可。
+GitQuiet @('branch', '-M', 'main') | Out-Null
 
 # ------------------------------------------------------------------ 提交
 git add -A
-$staged = git diff --cached --name-only
+$staged = GitQuiet @('diff', '--cached', '--name-only')
 if ($staged) {
     git commit -m $Message | Out-Null
-    Ok "已提交 $((($staged | Measure-Object).Count)) 个文件的改动"
+    if ($LASTEXITCODE -ne 0) { Die "提交失败。请检查 git 身份配置（user.name / user.email）。" }
+    Ok "已提交 $(($staged | Measure-Object).Count) 个文件的改动"
 } else {
     Info "没有新改动需要提交"
 }
 
 # ------------------------------------------------------------ 远程仓库
-$url = "https://github.com/$User/$Repo.git"
-$existing = git remote get-url origin 2>$null
-if ($LASTEXITCODE -eq 0 -and $existing) {
-    if ($existing -ne $url) {
+if ($RemoteUrl) {
+    $url = $RemoteUrl
+} elseif ($UseSSH) {
+    $url = "git@github.com:$User/$Repo.git"
+} else {
+    $url = "https://github.com/$User/$Repo.git"
+}
+
+# 用 git config --get 而不是 git remote get-url：没有 origin 时前者静默退出，
+# 后者会往 stderr 写 "error: No such remote"，在 PS 5.1 下很难处理。
+$existing = GitQuiet @('config', '--get', 'remote.origin.url')
+if ($existing) {
+    if ($existing.Trim() -ne $url) {
         git remote set-url origin $url
         Warn "远程地址已从 $existing 改为 $url"
+    } else {
+        Info "远程地址未变：$url"
     }
 } else {
     git remote add origin $url
+    if ($LASTEXITCODE -ne 0) { Die "添加远程仓库失败：$url" }
     Ok "已设置远程仓库 $url"
 }
 
