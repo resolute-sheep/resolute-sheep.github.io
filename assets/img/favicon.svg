@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="杨卓毅">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2f6fd0"/>
+      <stop offset="1" stop-color="#17457e"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#g)"/>
+  <!-- 芯片引脚 -->
+  <g stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" opacity=".55">
+    <path d="M14 6v6M26 6v6M38 6v6M50 6v6M14 52v6M26 52v6M38 52v6M50 52v6"/>
+    <path d="M6 14h6M6 26h6M6 38h6M6 50h6M52 14h6M52 26h6M52 38h6M52 50h6"/>
+  </g>
+  <rect x="13" y="13" width="38" height="38" rx="7" fill="none" stroke="#ffffff" stroke-width="2.6"/>
+  <text x="32" y="42" text-anchor="middle" font-family="Georgia, 'Songti SC', serif"
+        font-size="26" font-weight="700" fill="#ffffff">杨</text>
+</svg>
