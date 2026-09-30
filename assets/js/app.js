@@ -166,21 +166,16 @@
   function renderEducation() {
     var E = CONTENT.education;
     return '<section id="education">' + sectionHead(E.title) +
-      '<div class="card">' +
-        '<div class="project__top">' +
-          '<span class="project__name">' + esc(t(E.school)) + '</span>' +
-          '<span class="project__period">' + esc(t(E.period)) + '</span>' +
-        '</div>' +
-        '<div class="project__meta"><span class="project__role">' + esc(t(E.degree)) + '</span></div>' +
-        factGrid(E.gpa, 'facts') +
-        '<div class="block-label" style="margin-top:24px">' + esc(t(E.coursesTitle)) + '</div>' +
-        '<div class="course-grid">' +
-          E.courses.map(function (c) {
-            return '<div class="course"><span>' + esc(t(c.name)) + '</span>' +
-                   '<span class="course__score">' + esc(c.score) + '</span></div>';
-          }).join('') +
-        '</div>' +
-      '</div>' +
+      E.entries.map(function (e) {
+        return '<article class="card project">' +
+          '<div class="project__top">' +
+            '<h3 class="project__name">' + esc(t(e.school)) + '</h3>' +
+            '<span class="project__period">' + esc(t(e.period)) + '</span>' +
+          '</div>' +
+          '<div class="project__meta"><span class="project__role">' + esc(t(e.degree)) + '</span></div>' +
+          (e.focus ? '<p class="project__lead">' + esc(t(e.focus)) + '</p>' : '') +
+        '</article>';
+      }).join('') +
       '</section>';
   }
 
@@ -214,13 +209,10 @@
             '<span>' + esc(t(p.kind)) + '</span>' +
           '</div>' +
           (p.award ? '<div class="project__award">★ ' + esc(t(p.award)) + '</div>' : '') +
-          '<p class="project__lead">' + esc(t(p.lead)) + '</p>' +
+          '<p class="project__lead">' + esc(t(p.summary)) + '</p>' +
           '<div class="tags">' + p.tags.map(function (x) {
             return '<span class="tag">' + esc(t(x)) + '</span>';
           }).join('') + '</div>' +
-          '<ul class="points">' + p.points.map(function (x) {
-            return '<li>' + esc(t(x)) + '</li>';
-          }).join('') + '</ul>' +
           '<div class="block-label">' + esc(t(U.metricLabel)) + '</div>' +
           factGrid(p.metrics, 'metrics') +
           '<div class="scope"><div class="block-label">' + esc(t(U.scopeLabel)) + '</div>' +

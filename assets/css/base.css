@@ -277,7 +277,10 @@ section:first-of-type { padding-top: 34px; }
 
 /* -------------------------------------------------------------- 数据 / 指标格 */
 /* 列数由 JS 按指标个数写成 cols-N 类，保证最后一行不会只剩一个格子。
-   窄屏再用媒体查询降列，保持每格可读宽度。 */
+   窄屏再用媒体查询降列 —— 每个覆盖值都必须满足「项数 % 列数 ≠ 1」，
+   否则最后一行会只剩一个格子在左边、右边空出一大片。合法取值：
+     3 项 → 1 或 3 列     4 项 → 1 / 2 / 4 列     5 项 → 1 或 5 列
+   改这里的数字前先跑 python tools/css-check.py，它会校验这条规则。 */
 .facts, .metrics {
   display: grid; gap: 1px;
   grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
@@ -289,17 +292,12 @@ section:first-of-type { padding-top: 34px; }
 .cols-2 { --cols: 2; }
 .cols-3 { --cols: 3; }
 .cols-4 { --cols: 4; }
-.cols-5 { --cols: 5; }
-.cols-6 { --cols: 6; }
 
-@media (max-width: 900px) {
-  .cols-5, .cols-6 { --cols: 3; }
-}
 @media (max-width: 860px) {
   .cols-4 { --cols: 2; }
 }
 @media (max-width: 560px) {
-  .cols-3, .cols-5, .cols-6 { --cols: 2; }
+  .cols-3 { --cols: 1; }
 }
 
 .fact, .metric {
@@ -353,6 +351,7 @@ section:first-of-type { padding-top: 34px; }
   border-radius: var(--radius-sm); padding: 5px 12px; margin-bottom: 12px;
 }
 .project__lead { color: var(--text-dim); margin-bottom: 16px; }
+.project__lead:last-child { margin-bottom: 0; }   /* 教育背景卡里它是最后一行，别留一截空白 */
 
 .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
 .tag {

@@ -76,6 +76,30 @@ elif sm:
 else:
     print("✓ 没有设置锚点偏移")
 
+# 指标格列数：cols-N 的每个取值（含媒体查询里的窄屏覆盖）都必须满足 N % 列数 != 1，
+# 否则最后一行只会剩一个格子，右边空出一大片。
+cols_map = {}
+for m in re.finditer(r"\.cols-(\d+)\s*\{[^}]*--cols:\s*(\d+)", allcss):
+    cols_map.setdefault(int(m.group(1)), set()).add(int(m.group(2)))
+
+bad_cols = []
+for n in sorted(cols_map):
+    for c in sorted(cols_map[n]):
+        if c > n:
+            bad_cols.append(f"{n} 项排 {c} 列：列数多于项数")
+        elif n % c == 1:
+            bad_cols.append(f"{n} 项排 {c} 列：第二行只剩 1 个格子")
+
+print()
+if bad_cols:
+    ok = False
+    print("✗ 指标格列数会让最后一行落单：")
+    for b in bad_cols:
+        print(f"    {b}")
+else:
+    pairs = "，".join(f"{n} 项→{sorted(cols_map[n])} 列" for n in sorted(cols_map))
+    print(f"✓ 指标格列数全部合法（{pairs}）")
+
 # flex 容器上挂 ::after 且带 display:block 的可疑写法
 for f in FILES:
     src = open(f, encoding="utf-8").read()
