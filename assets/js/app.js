@@ -181,9 +181,10 @@
 
   function renderProjects() {
     var P = CONTENT.projects, U = CONTENT.ui;
-    return '<section id="projects">' + sectionHead(P.title, P.note) +
+    return '<section id="projects">' + sectionHead(P.title) +
       P.items.map(function (p) {
-        return '<article class="card project">' +
+        var detailId = 'detail-' + p.id;
+        return '<article class="card project" data-project="' + esc(p.id) + '">' +
           '<div class="project__top">' +
             '<h3 class="project__name">' + esc(t(p.name)) + '</h3>' +
             '<span class="project__period">' + esc(t(p.period)) + '</span>' +
@@ -191,16 +192,28 @@
           '<div class="project__meta">' +
             '<span class="project__role">' + esc(t(p.role)) + '</span>' +
             '<span>' + esc(t(p.kind)) + '</span>' +
+            // 展开按钮紧跟在标题右侧那一行
+            '<button class="project__toggle" type="button" aria-expanded="false" ' +
+              'aria-controls="' + detailId + '">' +
+              '<span class="project__toggle-label">' + esc(t(U.detailMore)) + '</span>' +
+              '<span class="project__chev" aria-hidden="true"></span>' +
+            '</button>' +
           '</div>' +
           (p.award ? '<div class="project__award">★ ' + esc(t(p.award)) + '</div>' : '') +
-          '<p class="project__lead">' + esc(t(p.summary)) + '</p>' +
-          '<div class="tags">' + p.tags.map(function (x) {
-            return '<span class="tag">' + esc(t(x)) + '</span>';
-          }).join('') + '</div>' +
-          '<div class="block-label">' + esc(t(U.metricLabel)) + '</div>' +
-          factGrid(p.metrics, 'metrics') +
-          '<div class="scope"><div class="block-label">' + esc(t(U.scopeLabel)) + '</div>' +
-            '<p>' + esc(t(p.scope)) + '</p></div>' +
+          // 收起时只显示这一句，读者据此判断要不要展开
+          '<p class="project__brief">' + esc(t(p.brief)) + '</p>' +
+          '<div class="project__detail" id="' + detailId + '">' +
+            '<div class="project__detail-inner">' +
+              '<p class="project__lead">' + esc(t(p.summary)) + '</p>' +
+              '<div class="tags">' + p.tags.map(function (x) {
+                return '<span class="tag">' + esc(t(x)) + '</span>';
+              }).join('') + '</div>' +
+              '<div class="block-label">' + esc(t(U.metricLabel)) + '</div>' +
+              factGrid(p.metrics, 'metrics') +
+              '<div class="scope"><div class="block-label">' + esc(t(U.scopeLabel)) + '</div>' +
+                '<p>' + esc(t(p.scope)) + '</p></div>' +
+            '</div>' +
+          '</div>' +
         '</article>';
       }).join('') +
       '</section>';
@@ -334,6 +347,19 @@
       store(LS_LANG, lang);
       mount();
       window.scrollTo(0, y);
+    });
+
+    // 项目卡：默认收起，点按钮展开细节
+    Array.prototype.forEach.call(document.querySelectorAll('.project__toggle'), function (btn) {
+      btn.addEventListener('click', function () {
+        var card = btn.closest('.project');
+        if (!card) return;
+        var open = !card.classList.contains('is-open');
+        card.classList.toggle('is-open', open);
+        btn.setAttribute('aria-expanded', String(open));
+        var label = btn.querySelector('.project__toggle-label');
+        if (label) label.textContent = t(open ? CONTENT.ui.detailLess : CONTENT.ui.detailMore);
+      });
     });
 
     var toggle = document.getElementById('awardToggle');

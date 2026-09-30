@@ -41,6 +41,8 @@ const CONTENT = {
     menu:        { zh: '目录', en: 'Menu' },
     metricLabel: { zh: '关键指标', en: 'Key metrics' },
     scopeLabel:  { zh: '验证边界', en: 'Scope & caveats' },
+    detailMore:  { zh: '展开详情', en: 'Show details' },
+    detailLess:  { zh: '收起',     en: 'Collapse' },
     awardsMore:  { zh: '展开其余荣誉', en: 'Show all awards' },
     footer:      { zh: '本站为静态页面，可用右上角开关切换中英文。',
                    en: 'Static site — use the switch above to change language.' },
@@ -51,7 +53,7 @@ const CONTENT = {
     { id: 'about',    label: { zh: '简介',     en: 'About' } },
     { id: 'education',label: { zh: '教育背景', en: 'Education' } },
     { id: 'research', label: { zh: '研究兴趣', en: 'Research' } },
-    { id: 'projects', label: { zh: '科研项目', en: 'Projects' } },
+    { id: 'projects', label: { zh: '项目经历', en: 'Projects' } },
     { id: 'awards',   label: { zh: '荣誉奖励', en: 'Awards' } },
     { id: 'skills',   label: { zh: '技能',     en: 'Skills' } },
     { id: 'service',  label: { zh: '学生工作', en: 'Service' } },
@@ -99,11 +101,9 @@ const CONTENT = {
     ],
   },
 
-  /* ------------------------------------------------------------------ 科研项目 */
+  /* ------------------------------------------------------------------ 项目经历 */
   projects: {
-    title: { zh: '科研与工程项目', en: 'Research & Engineering Projects' },
-    note: { zh: '指标均标注验证层级；未达标的如实标出。',
-            en: 'Every figure carries its verification level; metrics that fell short of target are marked as such.' },
+    title: { zh: '项目经历', en: 'Projects' },
     items: [
       /* ---------------------------------------------------------------- P1 */
       {
@@ -112,6 +112,8 @@ const CONTENT = {
         kind: { zh: '科研训练', en: 'Research' },
         role: { zh: '仿真自动化平台', en: 'Simulation-automation platform' },
         name: { zh: 'AI 辅助毫米波功率放大器敏捷设计', en: 'AI-Assisted Agile Design of mm-Wave Power Amplifiers' },
+        brief: { zh: '28 nm CMOS 毫米波功放的自动化多目标优化平台',
+                 en: 'An automated multi-objective optimisation platform for a 28 nm CMOS mm-wave PA' },
         summary: { zh: '面向 28 nm CMOS、120–140 GHz 变压器耦合功率放大器，把课题组已有的变压器 S 参数代理模型接入 Cadence 仿真，构建「多目标优化 + EDA 自动仿真」的闭环搜索。我负责自动化平台：用 Optuna 组织 TPE、NSGA-II、CMA-ES 等算法，把 18 维搜索坐标映射到 26 维物理参数，先用小信号仿真筛选匹配与稳定性，再用谐波平衡仿真评估 PAE 与输出功率，前后迭代了 11 个版本。',
                    en: 'A closed-loop search for a 28 nm CMOS, 120–140 GHz transformer-coupled power amplifier, wiring our group’s existing transformer S-parameter surrogate model into Cadence simulation. I built the automation platform: Optuna orchestrates TPE, NSGA-II and CMA-ES over an 18-dimensional search space mapped onto 26 physical parameters, with small-signal simulation screening matching and stability before harmonic-balance simulation evaluates PAE and output power. Eleven algorithm versions in total.' },
         tags: ['28 nm CMOS', '120–140 GHz', 'Optuna', 'Cadence Spectre', 'OCEAN'],
@@ -132,6 +134,8 @@ const CONTENT = {
         award: { zh: '第十届全国大学生集成电路创新创业大赛 华东赛区三等奖', en: 'Third Prize, East China Region, 10th National IC Innovation & Entrepreneurship Competition' },
         role: { zh: '架构设计与仿真验证', en: 'Architecture and simulation' },
         name: { zh: '低噪声高输入阻抗生物电信号模拟前端', en: 'Low-Noise High-Input-Impedance Biopotential Analog Front End' },
+        brief: { zh: '面向可穿戴生物电信号采集的斩波稳定模拟前端',
+                 en: 'A chopper-stabilised analog front end for wearable biopotential acquisition' },
         summary: { zh: '面向可穿戴生物电信号采集（0.1–2 mV @ 0.05–150 Hz）的 0.18 μm CMOS 模拟前端：斩波抑制 1/f 噪声与失调，DC-Servo 抵消差分电极失调，FVF 自举提升交流输入阻抗。我完成了架构选型、晶体管级设计与 PVT 仿真验证，并在 0.05–150 Hz 内做输入等效噪声分解，定位了噪声指标未达标的主导来源。',
                    en: 'A 0.18 μm CMOS front end for wearable biopotential acquisition (0.1–2 mV across 0.05–150 Hz): chopping suppresses 1/f noise and offset, a DC-servo loop cancels differential electrode offset, and FVF bootstrapping raises AC input impedance. I handled architecture selection, transistor-level design and PVT simulation, and decomposed the input-referred noise over 0.05–150 Hz to locate what dominates the shortfall against target.' },
         tags: ['0.18 μm CMOS', { zh: '斩波稳定 CFBIA', en: 'Chopper-stabilised CFBIA' }, 'DC-Servo', { zh: 'FVF 自举', en: 'FVF bootstrapping' }, { zh: '生物电信号采集', en: 'Biopotential acquisition' }],
@@ -152,6 +156,8 @@ const CONTENT = {
         award: { zh: '第九届全国大学生集成电路创新创业大赛 全国二等奖 · 华东赛区一等奖', en: 'National Second Prize, 9th National IC Innovation & Entrepreneurship Competition · First Prize, East China Region' },
         role: { zh: '队长 · 总体架构与板级验证', en: 'Team lead · architecture and board-level verification' },
         name: { zh: 'FPGA GZIP / Deflate 压缩器 IP 核', en: 'FPGA GZIP / Deflate Compressor IP Core' },
+        brief: { zh: '可综合的 GZIP 兼容流式压缩 IP 核',
+                 en: 'A synthesizable, GZIP-compatible streaming compressor IP core' },
         summary: { zh: '可综合的 GZIP 兼容流式压缩 IP 核，覆盖 LZ77 最长匹配、动态 Huffman 编码、位流打包、CRC32 与 GZIP 封装。我担任队长，负责总体架构与 DEFLATE 的硬件映射步骤、国赛技术文档、板级验证，并扩展 FT232H 高速接口、搭建 Python 解压与 CRC 闭环校验。',
                    en: 'A synthesizable, GZIP-compatible streaming compressor IP core covering LZ77 longest-match search, real-time dynamic Huffman coding, bitstream packing, CRC32 and the GZIP wrapper. As team lead I owned the overall architecture, the hardware mapping of the DEFLATE pipeline and the national-round technical report, ran board-level verification, extended a high-speed FT232H interface and built a Python decompression plus CRC closed-loop check.' },
         tags: ['Verilog', 'Deflate / LZ77', { zh: '动态 Huffman', en: 'Dynamic Huffman' }, 'AXI-Stream', 'FT232H'],
@@ -171,6 +177,8 @@ const CONTENT = {
         kind: { zh: '嵌入式系统', en: 'Embedded systems' },
         role: { zh: 'ARM 端软件与系统联调', en: 'ARM-side software and integration' },
         name: { zh: 'FPGA + RK3568 端云协同智慧视觉系统', en: 'FPGA + RK3568 Edge–Cloud Intelligent Vision System' },
+        brief: { zh: 'FPGA 与 ARM 异构的端云协同视觉平台',
+                 en: 'A heterogeneous FPGA + ARM edge–cloud vision platform' },
         summary: { zh: 'FPGA 与 RK3568 异构的端云协同视觉平台：FPGA 完成三路摄像头采集、ISP 预处理与 PCIe DMA 传输，ARM 端做 NPU 推理与云端告警联动。我负责 ARM 端软件与 FPGA–ARM 联调，实现 Qt 多线程应用、RKNN INT8 推理、多模型动态调度，并分别实现 YOLOv5 的 anchor 解码与 YOLOv6 的 DFL 回归后处理。',
                    en: 'A heterogeneous edge–cloud vision platform pairing an FPGA with an RK3568: the FPGA captures three camera streams, runs ISP pre-processing and transfers over PCIe DMA, while the ARM side performs NPU inference and cloud alarm reporting. I owned the ARM-side software and FPGA–ARM integration — a multithreaded Qt application, RKNN INT8 inference, dynamic multi-model scheduling, and separate post-processing for YOLOv5 anchor decoding and YOLOv6 DFL regression.' },
         tags: ['PG2L50H FPGA', 'RK3568J', 'PCIe DMA', 'RKNN INT8', 'YOLOv5 / v6'],
