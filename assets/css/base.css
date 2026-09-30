@@ -98,23 +98,29 @@ ul { margin: 0; padding: 0; list-style: none; }
   clip: rect(0 0 0 0); white-space: nowrap;
 }
 
-/* --------------------------------------------- 背景光效层 / 滚动进度条 */
-/* 默认全部隐藏，由各主题按需开启（目前只有作品集主题用） */
-.aurora, .grid-backdrop {
-  display: none; position: fixed; inset: 0;
-  z-index: 0; pointer-events: none;
+/* --------------------------------------------- 背景光晕 / 滚动进度条 */
+/* 页面顶部一层极淡的径向光晕，给白底一点层次，不抢内容 */
+.glow {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(58% 42% at 78% -6%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 68%),
+    radial-gradient(46% 36% at 10% 2%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%);
 }
+/* 顶部阅读进度条 */
 .progress {
-  display: none; position: fixed; top: 0; left: 0;
+  position: fixed; top: 0; left: 0;
   height: 2px; width: 0; z-index: 70; pointer-events: none;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, #7fb2ff), var(--accent));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 45%, transparent);
+  transition: width .08s linear;
 }
 
 /* ------------------------------------------------------------ 滚动进入动画 */
 /* 由 JS 挂上 .js-reveal，脚本不可用时内容照常显示 */
 .js-reveal .reveal {
-  opacity: 0; transform: translateY(14px);
-  transition: opacity .62s cubic-bezier(.2, .65, .3, 1),
-              transform .62s cubic-bezier(.2, .65, .3, 1);
+  opacity: 0; transform: translateY(16px);
+  transition: opacity .7s cubic-bezier(.2, .65, .3, 1),
+              transform .7s cubic-bezier(.2, .65, .3, 1);
 }
 .js-reveal .reveal.is-in { opacity: 1; transform: none; }
 
@@ -136,26 +142,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 
 .controls { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-
-/* 分段控件：主题 / 语言 */
-.seg {
-  display: inline-flex; padding: 3px; gap: 2px;
-  background: var(--surface-2);
-  border: var(--rule); border-radius: 999px;
-}
-.seg__btn {
-  appearance: none; border: 0; background: transparent; cursor: pointer;
-  font: inherit; font-size: var(--fs-small); font-weight: 600;
-  color: var(--text-dim);
-  padding: 5px 13px; border-radius: 999px;
-  transition: background var(--dur), color var(--dur);
-  white-space: nowrap;
-}
-.seg__btn:hover { color: var(--text); }
-.seg__btn[aria-pressed="true"] {
-  background: var(--accent); color: var(--accent-contrast);
-  box-shadow: var(--shadow);
-}
 
 .lang-btn {
   appearance: none; cursor: pointer; font: inherit;
@@ -219,12 +205,6 @@ section:first-of-type { padding-top: 34px; }
   grid-template-columns: minmax(0, 1fr) 272px;
   gap: 34px;
   align-items: center;
-}
-.hero__eyebrow {
-  display: inline-block; font-size: .74rem; font-weight: 700;
-  letter-spacing: var(--tracking-label); text-transform: uppercase;
-  color: var(--accent); background: var(--accent-soft);
-  padding: 4px 12px; border-radius: 999px; margin-bottom: 16px;
 }
 .hero__name { font-size: var(--fs-h1); letter-spacing: -.015em; margin-bottom: 6px; }
 .hero__name .romanised {
@@ -371,6 +351,10 @@ section:first-of-type { padding-top: 34px; }
   width: 6px; height: 6px; border-radius: 50%;
   background: var(--accent); opacity: .55;
 }
+/* 学生工作里的要点列表：条目多、每条较长，单独放宽间距 */
+.points--service { margin: 12px 0 0; gap: 10px; }
+.points--service li { font-size: .89rem; line-height: 1.72; }
+.points--service li::before { top: .74em; }
 
 .block-label {
   font-size: .72rem; font-weight: 700; text-transform: uppercase;
@@ -388,18 +372,29 @@ section:first-of-type { padding-top: 34px; }
 .scope .block-label { margin-bottom: 6px; }
 .scope p { margin: 0; }
 
-/* ---------------------------------------------------------------- 课程 / 技能 */
-.course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(228px, 1fr)); gap: 8px; }
-.course {
-  display: flex; align-items: baseline; gap: 10px;
-  padding: 9px 14px; border-radius: var(--radius-sm);
-  background: var(--surface-2); border: var(--rule);
-  font-size: .89rem;
+/* -------------------------------------------------------------- 研究兴趣 / 技能 */
+.research-list { display: grid; gap: 12px; }
+.research-item {
+  display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 18px;
+  align-items: start;
+  padding: 22px 24px;
+  background: var(--surface);
+  border: var(--rule); border-radius: var(--radius);
+  transition: border-color var(--dur), box-shadow var(--dur), transform var(--dur);
 }
-.course__score {
-  margin-left: auto; font-family: var(--font-mono); font-weight: 700;
-  color: var(--accent); font-size: .95rem;
+.research-item:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: 0 10px 30px rgba(16, 24, 40, .08);
+  transform: translateY(-2px);
 }
+.research-item__icon {
+  display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--accent-soft); color: var(--accent);
+  font-size: 1.15rem; line-height: 1;
+}
+.research-item__name { font-size: 1.08rem; font-weight: 680; margin-bottom: 6px; }
+.research-item__desc { margin: 0; color: var(--text-dim); font-size: .94rem; }
 
 .skill-groups { display: grid; gap: 14px; }
 .skill-group { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; align-items: start; }
@@ -451,6 +446,15 @@ section:first-of-type { padding-top: 34px; }
 }
 .to-top.is-on { opacity: 1; pointer-events: auto; }
 .to-top:hover { transform: translateY(-2px); }
+/* 进度环：--p 由 app.js 写入（0~1），用 conic-gradient 画圆弧 */
+.to-top__ring {
+  position: absolute; inset: -4px; border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(var(--accent) calc(var(--p, 0) * 360deg),
+                             color-mix(in srgb, var(--accent) 16%, transparent) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+}
 
 /* ---------------------------------------------------------------- 响应式 */
 @media (max-width: 900px) {

@@ -1,13 +1,11 @@
 /* =============================================================================
- * app.js — 渲染、中英切换、主题切换、滚动目录
+ * app.js — 渲染、中英切换、滚动目录、动效
  * 内容全部来自 content.js，本文件不需要改。
  * ========================================================================== */
 (function () {
   'use strict';
 
-  var THEMES = ['academic', 'portfolio', 'terminal'];
   var LS_LANG = 'yz.lang';
-  var LS_THEME = 'yz.theme';
 
   /* ------------------------------------------------------------ 小工具 */
   function esc(s) {
@@ -23,17 +21,11 @@
     try { return window.localStorage.getItem(key); } catch (e) { return null; }
   }
 
-  /* ------------------------------------------------------- 语言 / 主题状态 */
+  /* ------------------------------------------------------------- 语言状态 */
   var lang = (function () {
     var saved = load(LS_LANG);
     if (saved === 'zh' || saved === 'en') return saved;
-    return (navigator.language || '').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'zh';
-  })();
-
-  var theme = (function () {
-    var saved = load(LS_THEME);
-    if (THEMES.indexOf(saved) >= 0) return saved;
-    return 'academic';
+    return 'zh';
   })();
 
   /** 取双语文案 */
@@ -86,21 +78,15 @@
     }).join('') + '</div>';
   }
 
-  /* ------------------------------------------------ 背景光效层 / 进度条 */
+  /* --------------------------------------------------- 背景光效层 / 进度条 */
   function renderChrome() {
     return '' +
-      '<div class="aurora" aria-hidden="true"></div>' +
-      '<div class="grid-backdrop" aria-hidden="true"></div>' +
+      '<div class="glow" aria-hidden="true"></div>' +
       '<div class="progress" id="progress" aria-hidden="true"></div>';
   }
 
   function renderTopbar() {
     var S = CONTENT.site, U = CONTENT.ui;
-    var themeBtns = THEMES.map(function (id) {
-      return '<button class="seg__btn" type="button" data-theme-set="' + id + '" ' +
-             'aria-pressed="' + (theme === id) + '">' + esc(t(U.themes[id])) + '</button>';
-    }).join('');
-
     return '' +
       '<header class="topbar">' +
         '<div class="brand">' +
@@ -108,7 +94,6 @@
           '<span class="brand__sub">' + esc(t(S.title)) + '</span>' +
         '</div>' +
         '<div class="controls">' +
-          '<div class="seg" role="group" aria-label="' + esc(t(U.themeLabel)) + '">' + themeBtns + '</div>' +
           '<button class="lang-btn" type="button" id="langBtn" title="' + esc(t(U.langTitle)) + '" ' +
             'aria-label="' + esc(t(U.langTitle)) + '">' + esc(t(U.langLabel)) + '</button>' +
         '</div>' +
@@ -133,7 +118,6 @@
     return '' +
       '<section class="hero" id="hero">' +
         '<div class="hero__body">' +
-          '<div class="hero__eyebrow">' + esc(t(S.status)) + '</div>' +
           '<h1 class="hero__name">' + esc(t(S.name)) +
             '<span class="romanised">' + esc(t(S.nameEn)) + '</span></h1>' +
           '<p class="hero__title">' + esc(t(S.title)) + '</p>' +
@@ -159,7 +143,6 @@
     var A = CONTENT.about;
     return '<section id="about">' + sectionHead(A.title) +
       A.paragraphs.map(function (p) { return '<p>' + esc(t(p)) + '</p>'; }).join('') +
-      '<div style="margin-top:22px">' + factGrid(A.facts, 'facts') + '</div>' +
       '</section>';
   }
 
@@ -182,13 +165,14 @@
   function renderResearch() {
     var R = CONTENT.research;
     return '<section id="research">' + sectionHead(R.title) +
-      '<div class="facts cols-' + balancedCols(R.items.length) + '">' +
+      '<div class="research-list">' +
         R.items.map(function (it) {
-          return '<div class="fact" style="padding:20px 20px 22px">' +
-            '<div class="fact__v" style="font-size:1rem;margin-bottom:6px">' +
-              '<span style="color:var(--accent);margin-right:8px">' + esc(it.icon) + '</span>' +
-              esc(t(it.name)) + '</div>' +
-            '<div class="fact__sub" style="line-height:1.7">' + esc(t(it.desc)) + '</div>' +
+          return '<div class="research-item">' +
+            '<div class="research-item__icon" aria-hidden="true">' + esc(it.icon) + '</div>' +
+            '<div>' +
+              '<div class="research-item__name">' + esc(t(it.name)) + '</div>' +
+              '<p class="research-item__desc">' + esc(t(it.desc)) + '</p>' +
+            '</div>' +
           '</div>';
         }).join('') +
       '</div>' +
@@ -270,10 +254,16 @@
     return '<section id="service">' + sectionHead(S.title) +
       '<div class="card"><div class="entries">' +
         S.items.map(function (s) {
-          return '<div class="entry">' +
+          return '<div class="entry entry--rich">' +
             '<div class="entry__period">' + esc(t(s.period)) + '</div>' +
             '<div><div class="entry__role">' + esc(t(s.role)) + '</div>' +
-            '<div class="entry__desc">' + esc(t(s.desc)) + '</div></div>' +
+            '<div class="entry__desc">' + esc(t(s.desc)) + '</div>' +
+            (s.points
+              ? '<ul class="points points--service">' + s.points.map(function (p) {
+                  return '<li>' + esc(t(p)) + '</li>';
+                }).join('') + '</ul>'
+              : '') +
+            '</div>' +
           '</div>';
         }).join('') +
       '</div></div></section>';
@@ -301,14 +291,13 @@
       '<span>© ' + year + ' ' + esc(t(S.name)) + ' · ' + esc(t(S.nameEn)) + '</span>' +
       '<span>' + esc(t(U.footer)) + '</span>' +
       '</footer>' +
-      '<button class="to-top" type="button" id="toTop" aria-label="Top">↑</button>' +
-      '<div class="curtain" aria-hidden="true"></div>';
+      '<button class="to-top" type="button" id="toTop" aria-label="Top">' +
+        '<span class="to-top__ring" aria-hidden="true"></span>↑</button>';
   }
 
   /* ---------------------------------------------------------------- 挂载 */
   function mount() {
     document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-    document.documentElement.dataset.theme = theme;
 
     var S = CONTENT.site;
     document.title = t(S.name) + ' · ' + t(S.tagline);
@@ -322,18 +311,18 @@
       renderContact() + '</main></div>' + renderFooter();
 
     bind();
-    syncAnchor();          // 先量吸顶栏，--anchor-offset 是判定线和 scroll-padding 的共同依据
+    syncAnchor();
     collectSections();
     markReveal();
     setupReveal();
     updateProgress();
     updateSpy();
 
-    // 首屏入场动画只在第一次加载时播放，切语言/主题不重播
+    // 首屏入场动画只在第一次加载时播放，切换语言不重播
     if (document.documentElement.classList.contains('boot')) {
       window.setTimeout(function () {
         document.documentElement.classList.remove('boot');
-      }, 1600);          // 略长于最晚一段动画的结束时间（.56s + .8s）
+      }, 1700);          // 略长于最晚一段动画的结束时间（.5s + .9s）
     }
   }
 
@@ -345,20 +334,6 @@
       store(LS_LANG, lang);
       mount();
       window.scrollTo(0, y);
-    });
-
-    Array.prototype.forEach.call(document.querySelectorAll('[data-theme-set]'), function (btn) {
-      btn.addEventListener('click', function () {
-        theme = btn.getAttribute('data-theme-set');
-        store(LS_THEME, theme);
-        document.documentElement.dataset.theme = theme;
-        Array.prototype.forEach.call(document.querySelectorAll('[data-theme-set]'), function (b) {
-          b.setAttribute('aria-pressed', String(b.getAttribute('data-theme-set') === theme));
-        });
-        // 换主题后吸顶结构会变（作品集多了吸顶胶囊导航），重新量并重新高亮
-        syncAnchor();
-        updateSpy();
-      });
     });
 
     var toggle = document.getElementById('awardToggle');
@@ -499,28 +474,6 @@
     below.forEach(function (el) { revealObserver.observe(el); });
   }
 
-  /* ------------------------------------------- 卡片聚光（跟随鼠标的光斑） */
-  function setupSpotlight() {
-    var pending = null;
-    var raf = window.requestAnimationFrame || function (fn) { return window.setTimeout(fn, 16); };
-
-    document.addEventListener('mousemove', function (e) {
-      if (document.documentElement.dataset.theme !== 'portfolio') return;
-      var el = e.target;
-      var card = el && el.closest ? el.closest('.card') : null;
-      if (!card) return;
-      var cx = e.clientX, cy = e.clientY;     // 同步取值，事件对象不跨帧使用
-      // 用 rAF 合并高频 mousemove，避免每次移动都强制同步布局
-      if (pending) return;
-      pending = raf(function () {
-        pending = null;
-        var r = card.getBoundingClientRect();
-        card.style.setProperty('--mx', (cx - r.left) + 'px');
-        card.style.setProperty('--my', (cy - r.top) + 'px');
-      });
-    }, { passive: true });
-  }
-
   /* -------------------------------------------------------- 滚动进度条 */
   function updateProgress() {
     var el = document.getElementById('progress');
@@ -531,11 +484,22 @@
     el.style.width = (p * 100) + '%';
   }
 
+  /* ------------------------------------------------------ 返回顶部的进度环 */
+  function updateToTopRing() {
+    var ring = document.querySelector('.to-top__ring');
+    if (!ring) return;
+    var doc = document.documentElement;
+    var total = doc.scrollHeight - window.innerHeight;
+    var p = total > 0 ? Math.min(1, Math.max(0, window.scrollY / total)) : 0;
+    ring.style.setProperty('--p', p.toFixed(3));
+  }
+
   /* -------------------------------------------------------------- 滚动状态 */
   function onScroll() {
     var btn = document.getElementById('toTop');
     if (btn) btn.classList.toggle('is-on', window.scrollY > 620);
     updateProgress();
+    updateToTopRing();
     updateSpy();
   }
 
@@ -556,7 +520,6 @@
   }, { passive: true });
 
   /* ---------------------------------------------------------------- 启动 */
-  setupSpotlight();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', mount);
   } else {

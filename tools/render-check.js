@@ -105,18 +105,14 @@ function run(lang) {
   load('assets/js/app.js');
 
   const html = doc.getElementById('app').innerHTML;
-  return { html, title: doc.title, theme: doc.documentElement.dataset.theme, lang: doc.documentElement.lang };
+  return { html, title: doc.title, lang: doc.documentElement.lang };
 }
 
 /* -------------------------------------------------------------- 结构校验 */
 const EXPECTED_IDS = ['about', 'education', 'research', 'projects', 'awards', 'skills', 'service', 'contact'];
 
-/* 各主题下指标格容器的实际宽度（px），用于估算每格宽度 */
-const THEME_WIDTHS = {
-  academic:  788,   // 1080 - 40(padding) - 208(sidebar) - 44(gap)
-  portfolio: 1088,  // 1180 - 40(padding) - 52(card padding)
-  terminal:  988,   // 1080 - 40(padding) - 52(card padding)
-};
+/* 指标格容器的实际宽度（px），用于估算每格宽度 */
+const CONTENT_WIDTH = 788;   // 1080 - 40(shell padding) - 208(sidebar) - 44(gap)
 
 /** 校验每个 facts / metrics 块的列数不会让最后一行只剩一个格子 */
 function checkGrids(label, html) {
@@ -134,7 +130,7 @@ function checkGrids(label, html) {
     const n = (slice.match(itemRe) || []).length;
     const cols = mark.cols;
     const remainder = n % cols;
-    const px = Math.round((THEME_WIDTHS.academic - (cols - 1)) / cols);
+    const px = Math.round((CONTENT_WIDTH - (cols - 1)) / cols);
 
     const flag = [];
     if (!cols) flag.push('没有 cols-N 类');
@@ -166,8 +162,8 @@ function check(label, res) {
   }
   if (/\{\s*zh:/.test(html)) problems.push('有未翻译的 {zh: ...} 对象泄漏到输出');
 
-  // 光效层 / 进度条 / 返回顶部
-  for (const sel of ['class="aurora"', 'class="grid-backdrop"', 'id="progress"', 'id="toTop"', 'class="curtain"']) {
+  // 光晕层 / 进度条 / 返回顶部
+  for (const sel of ['class="glow"', 'id="progress"', 'id="toTop"', 'class="to-top__ring"']) {
     if (!html.includes(sel)) problems.push(`缺少 ${sel}`);
   }
 
@@ -202,7 +198,7 @@ function check(label, res) {
   const cards = (html.match(/class="card/g) || []).length;
 
   console.log(`\n[${label}]  title="${res.title}"`);
-  console.log(`  lang=${res.lang} theme=${res.theme}  html=${html.length} 字节  section=${sections}  card=${cards}`);
+  console.log(`  lang=${res.lang}  html=${html.length} 字节  section=${sections}  card=${cards}`);
   console.log(`  目录项 ${spyTargets.length} 个 → ${spyTargets.join(', ')}`);
   if (orphanSections.length) {
     console.log(`  · 无目录项的版块（首屏等）：${orphanSections.join(', ')}`);
@@ -229,10 +225,10 @@ const indexPath = path.join(ROOT, 'index.html');
 const indexHtml = fs.readFileSync(indexPath, 'utf8');
 const indexProblems = [];
 if (!/class="boot"/.test(indexHtml)) indexProblems.push('index.html 缺少 class="boot"（首屏入场动画的开关）');
-if (!/data-theme="academic"/.test(indexHtml)) indexProblems.push('index.html 缺少默认 data-theme');
-if (!/yz\.theme/.test(indexHtml)) indexProblems.push('index.html 缺少防闪烁的主题预置脚本');
+if (/data-theme=/.test(indexHtml)) indexProblems.push('index.html 还带着 data-theme（现在只有一套配色，应已移除）');
+if (/yz\.theme/.test(indexHtml)) indexProblems.push('index.html 还残留主题预置脚本');
 console.log(`\n[index.html]`);
-console.log(indexProblems.length ? '  ✗ ' + indexProblems.join('\n  ✗ ') : '  ✓ boot 开关 / 默认主题 / 防闪烁脚本都在');
+console.log(indexProblems.length ? '  ✗ ' + indexProblems.join('\n  ✗ ') : '  ✓ boot 开关正常，已无主题残留');
 ok = indexProblems.length === 0 && ok;
 
 const zh = run('zh');

@@ -4,9 +4,8 @@
  * 在桩 DOM 里模拟真实的页面几何（版块高度、吸顶栏高度、视口高度），
  * 然后断言「视口里看到的版块」和「目录里高亮的项」始终一致。
  *
- * 覆盖两个场景：
+ * 覆盖场景：
  *   academic   侧栏在左列，只有顶栏吸顶          → 判定线 = 顶栏高度 + 24
- *   portfolio  另有吸顶胶囊导航压在内容上方      → 判定线 = 导航底边 + 24
  *
  * 用法：node tools/spy-check.js
  * ========================================================================== */
@@ -33,8 +32,7 @@ const SECTION_DEFS = [
 ];
 
 const SCENARIOS = [
-  { name: 'academic',  headerH: 48, sidebarW: '208px', stickyNav: null },
-  { name: 'portfolio', headerH: 48, sidebarW: '0px',   stickyNav: { top: 56, height: 56 } },
+  { name: 'academic', headerH: 48, sidebarW: '208px', stickyNav: null },
 ];
 
 /* ------------------------------------------------------------------ 桩 DOM */

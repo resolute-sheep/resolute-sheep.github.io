@@ -14,7 +14,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 FILES = ["assets/css/base.css", "assets/css/themes.css"]
 
 # 由 JS 在运行时写入的自定义属性，允许「无定义但有兜底值」
-RUNTIME_VARS = {"--mx", "--my"}
+RUNTIME_VARS = {"--mx", "--my", "--p"}
 
 ok = True
 defined = set()
