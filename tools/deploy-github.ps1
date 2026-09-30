@@ -97,6 +97,46 @@ if (-not (Test-Path (Join-Path $site '.git'))) {
 GitQuiet @('branch', '-M', 'main') | Out-Null
 
 # ------------------------------------------------------------------ 提交
+# ------------------------------------------------------ 资源版本号（防缓存）
+# GitHub Pages 给静态资源的响应头是 Cache-Control: max-age=600，
+# 也就是说浏览器 10 分钟内根本不会来问有没有新版本，直接拿缓存渲染。
+# 解决办法是给 CSS/JS 的 URL 带上内容哈希：内容变了 URL 就变，浏览器必然重新下载。
+# 哈希由 assets 下的文件内容算出，所以内容没变时版本号也不变，不会产生多余的提交。
+function Get-AssetVersion {
+    $parts = @()
+    foreach ($d in 'assets\css', 'assets\js') {
+        $dir = Join-Path $site $d
+        if (Test-Path $dir) {
+            Get-ChildItem $dir -File | Sort-Object Name | ForEach-Object {
+                $parts += (Get-FileHash $_.FullName -Algorithm SHA1).Hash
+            }
+        }
+    }
+    if (-not $parts) { return '0' }
+    $sha = [System.Security.Cryptography.SHA1]::Create()
+    $bytes = $sha.ComputeHash([System.Text.Encoding]::UTF8.GetBytes(($parts -join '|')))
+    return ([System.BitConverter]::ToString($bytes) -replace '-', '').Substring(0, 8).ToLower()
+}
+
+$indexPath = Join-Path $site 'index.html'
+if (Test-Path $indexPath) {
+    $ver = Get-AssetVersion
+    $enc = New-Object System.Text.UTF8Encoding($false)
+    $html = [System.IO.File]::ReadAllText($indexPath, $enc)
+    # 已有 ?v=xxx 就替换，没有就补上
+    $newHtml = [regex]::Replace(
+        $html,
+        'assets/(css|js)/([A-Za-z0-9._-]+\.(?:css|js))(\?v=[0-9a-z]+)?',
+        ('assets/$1/$2?v=' + $ver))
+    if ($newHtml -ne $html) {
+        [System.IO.File]::WriteAllText($indexPath, $newHtml, $enc)
+        Ok "资源版本号 -> ?v=$ver"
+    } else {
+        Info "资源版本号未变（?v=$ver）"
+    }
+}
+
+# ------------------------------------------------------------------ 提交
 git add -A
 $staged = GitQuiet @('diff', '--cached', '--name-only')
 if ($staged) {
