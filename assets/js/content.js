@@ -66,10 +66,12 @@ const CONTENT = {
     paragraphs: [
       { zh: '我是杨卓毅，南京大学集成电路学院 2023 级本科生，主修集成电路设计与集成系统，中共预备党员。已推免至复旦大学集成电路与微纳电子创新学院直接攻读博士学位，研究方向为高速接口与光电互连集成电路，主要关注 200 Gbps 电芯片。',
         en: 'I am Zhuoyi Yang, a third-year undergraduate at the School of Integrated Circuits, Nanjing University, majoring in Integrated Circuit Design and Integrated Systems. I have been admitted by recommendation to the School of Integrated Circuits and Micro-Nano Electronics at Fudan University for a direct PhD, working on high-speed interface and optoelectronic interconnect integrated circuits, with a focus on 200 Gbps electrical ICs.' },
-      { zh: '本科阶段我的训练集中在模拟与混合信号集成电路，并以射频电路、数字系统和设计自动化作为能力补充。我较早进入实验室参与科研实践，完成了从指标分解、晶体管级设计到仿真验证的完整闭环，也做过 FPGA 硬件加速与软硬件协同系统。这些经历让我体会到模拟设计“于细微处见功夫”——一个偏置点的选取、一对管子的宽长比，都可能决定系统性能的上限。',
-        en: 'My undergraduate training centres on analog and mixed-signal integrated circuits, complemented by RF circuits, digital systems and design automation. I joined a lab early on and have worked through the full loop from specification breakdown and transistor-level design to simulation-based verification, alongside FPGA hardware acceleration and hardware–software co-design. These projects taught me that analog design is decided in the details — a bias point, a device aspect ratio, can set the ceiling of the whole system.' },
-      { zh: '学习之外，我担任学院学生会执行主席，也做过大型活动主持与校园电台播音。',
-        en: 'Beyond coursework, I serve as Executive President of the student union of my school, and have worked as an event host and campus radio presenter.' },
+
+      { zh: '本科四年，我在模拟前端、射频功放、FPGA 硬件加速和异构计算几条线上各完整做过一个项目，每个都从指标分解、晶体管级设计一直走到仿真验证与板级集成。比起把某一个模块做到极致，我更习惯先把流程和工具搭起来：在毫米波功放优化项目里，我负责的是把代理模型、优化算法和 Cadence 仿真接成可记录、可复现的闭环，这套流程前后迭代了 11 个算法版本；在两届集创赛里我都是队长，负责总体架构、验证方案与接口扩展，而不是某一段代码。',
+        en: 'Across four years I have taken one project to completion in each of four areas — analog front ends, RF power amplifiers, FPGA acceleration and heterogeneous computing — carrying every one from specification breakdown and transistor-level design through to simulation and board-level integration. Rather than perfecting a single block, I tend to build the process and the tooling first. In the mm-wave PA optimisation project I owned the loop that wires the surrogate model, the optimisation algorithms and Cadence simulation into something recordable and reproducible — a flow that went through eleven algorithm versions. In both IC competitions I led the team, owning the architecture, the verification plan and the interface extension rather than any one piece of code.' },
+
+      { zh: '这些训练让我留下两个习惯：把结论和验证条件写在一起——仿真就是仿真，实测就是实测；以及把踩过的坑整理成别人能复用的东西，比如面向低年级的推免经验分享，和同学一起做的集成电路学习资源站。学习之外，我担任学院学生会执行主席，跑过 1000 多公里，也做过大型活动主持和校园电台播音。',
+        en: 'That training left me with two habits: stating conclusions together with their verification conditions — simulation is simulation, measurement is measurement — and turning the mistakes I make into something others can reuse, such as a graduate-admission talk for junior students and an IC learning-resource site built with classmates. Outside coursework I serve as Executive President of my school’s student union, have run over 1,000 km, and have worked as an event host and campus radio presenter.' },
     ],
   },
 
