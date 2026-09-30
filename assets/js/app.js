@@ -184,7 +184,7 @@
     return '<section id="projects">' + sectionHead(P.title) +
       P.items.map(function (p) {
         var detailId = 'detail-' + p.id;
-        return '<article class="card project" data-project="' + esc(p.id) + '">' +
+        return '<article class="card project fold" data-project="' + esc(p.id) + '">' +
           '<div class="project__top">' +
             '<h3 class="project__name">' + esc(t(p.name)) + '</h3>' +
             '<span class="project__period">' + esc(t(p.period)) + '</span>' +
@@ -193,17 +193,17 @@
             '<span class="project__role">' + esc(t(p.role)) + '</span>' +
             '<span>' + esc(t(p.kind)) + '</span>' +
             // 展开按钮紧跟在标题右侧那一行
-            '<button class="project__toggle" type="button" aria-expanded="false" ' +
-              'aria-controls="' + detailId + '">' +
-              '<span class="project__toggle-label">' + esc(t(U.detailMore)) + '</span>' +
-              '<span class="project__chev" aria-hidden="true"></span>' +
-            '</button>' +
+          '<button class="fold__btn" type="button" aria-expanded="false" ' +
+            'aria-controls="' + detailId + '">' +
+            '<span class="fold__label">' + esc(t(U.detailMore)) + '</span>' +
+            '<span class="fold__chev" aria-hidden="true"></span>' +
+          '</button>' +
           '</div>' +
           (p.award ? '<div class="project__award">★ ' + esc(t(p.award)) + '</div>' : '') +
           // 收起时只显示这一句，读者据此判断要不要展开
           '<p class="project__brief">' + esc(t(p.brief)) + '</p>' +
-          '<div class="project__detail" id="' + detailId + '">' +
-            '<div class="project__detail-inner">' +
+          '<div class="fold__body" id="' + detailId + '">' +
+            '<div class="fold__inner">' +
               '<p class="project__lead">' + esc(t(p.summary)) + '</p>' +
               '<div class="tags">' + p.tags.map(function (x) {
                 return '<span class="tag">' + esc(t(x)) + '</span>';
@@ -221,22 +221,24 @@
 
   function renderAwards() {
     var A = CONTENT.awards, U = CONTENT.ui;
-    var LIMIT = 6;
+    var LIMIT = 3;                      // 只留前三项：国奖 / 优秀学生标兵 / 集创赛国二
     var head = A.items.slice(0, LIMIT).map(awardRow).join('');
     var rest = A.items.slice(LIMIT);
 
     return '<section id="awards">' + sectionHead(A.title) +
       '<div class="card"><div class="entries" id="awardList">' + head +
         (rest.length
-          ? '<div id="awardRest" hidden>' + rest.map(awardRow).join('') + '</div>'
+          ? '<div class="fold" id="awardFold">' +
+              '<div class="fold__body"><div class="fold__inner" id="awardRest">' +
+                rest.map(awardRow).join('') +
+              '</div></div>' +
+              '<button class="fold__btn" type="button" aria-expanded="false" aria-controls="awardRest">' +
+                '<span class="fold__label">' + esc(t(U.awardsMore)) + ' (' + rest.length + ')</span>' +
+                '<span class="fold__chev" aria-hidden="true"></span>' +
+              '</button>' +
+            '</div>'
           : '') +
-      '</div>' +
-      (rest.length
-        ? '<button class="btn" type="button" id="awardToggle" style="margin-top:16px" ' +
-          'aria-expanded="false" aria-controls="awardRest">' + esc(t(U.awardsMore)) +
-          ' (' + rest.length + ')</button>'
-        : '') +
-      '</div></section>';
+      '</div></div></section>';
 
     function awardRow(a) {
       return '<div class="entry' + (a.star ? ' is-star' : '') + '">' +
@@ -263,19 +265,33 @@
   }
 
   function renderService() {
-    var S = CONTENT.service;
+    var S = CONTENT.service, U = CONTENT.ui;
     return '<section id="service">' + sectionHead(S.title) +
       '<div class="card"><div class="entries">' +
-        S.items.map(function (s) {
-          return '<div class="entry entry--rich">' +
+        S.items.map(function (s, i) {
+          var hasPoints = !!(s.points && s.points.length);
+          var bodyId = 'svc-' + i;
+          return '<div class="entry entry--rich' + (hasPoints ? ' fold' : '') + '">' +
             '<div class="entry__period">' + esc(t(s.period)) + '</div>' +
-            '<div><div class="entry__role">' + esc(t(s.role)) + '</div>' +
-            '<div class="entry__desc">' + esc(t(s.desc)) + '</div>' +
-            (s.points
-              ? '<ul class="points points--service">' + s.points.map(function (p) {
-                  return '<li>' + esc(t(p)) + '</li>';
-                }).join('') + '</ul>'
-              : '') +
+            '<div>' +
+              '<div class="entry__role-row">' +
+                '<span class="entry__role">' + esc(t(s.role)) + '</span>' +
+                (hasPoints
+                  ? '<button class="fold__btn" type="button" aria-expanded="false" ' +
+                      'aria-controls="' + bodyId + '">' +
+                      '<span class="fold__label">' + esc(t(U.detailMore)) + '</span>' +
+                      '<span class="fold__chev" aria-hidden="true"></span>' +
+                    '</button>'
+                  : '') +
+              '</div>' +
+              '<div class="entry__desc">' + esc(t(s.desc)) + '</div>' +
+              (hasPoints
+                ? '<div class="fold__body" id="' + bodyId + '"><div class="fold__inner">' +
+                    '<ul class="points points--service">' + s.points.map(function (p) {
+                      return '<li>' + esc(t(p)) + '</li>';
+                    }).join('') + '</ul>' +
+                  '</div></div>'
+                : '') +
             '</div>' +
           '</div>';
         }).join('') +
@@ -349,32 +365,26 @@
       window.scrollTo(0, y);
     });
 
-    // 项目卡：默认收起，点按钮展开细节
-    Array.prototype.forEach.call(document.querySelectorAll('.project__toggle'), function (btn) {
+    // 所有可折叠区块统一处理：项目细节、学生工作要点、其余荣誉
+    // 触发按钮是 .fold__btn，被折叠的宿主是它最近的 .fold 祖先
+    Array.prototype.forEach.call(document.querySelectorAll('.fold__btn'), function (btn) {
+      var label = btn.querySelector('.fold__label');
+      // 记住收起时的文案（项目的「展开详情」、荣誉的「展开其余荣誉 (8)」各不相同）
+      if (label) btn.setAttribute('data-more', label.textContent);
+
       btn.addEventListener('click', function () {
-        var card = btn.closest('.project');
-        if (!card) return;
-        var open = !card.classList.contains('is-open');
-        card.classList.toggle('is-open', open);
+        var host = btn.closest('.fold');
+        if (!host) return;
+        var open = !host.classList.contains('is-open');
+        host.classList.toggle('is-open', open);
         btn.setAttribute('aria-expanded', String(open));
-        var label = btn.querySelector('.project__toggle-label');
-        if (label) label.textContent = t(open ? CONTENT.ui.detailLess : CONTENT.ui.detailMore);
+        if (label) {
+          label.textContent = open
+            ? t(CONTENT.ui.detailLess)
+            : btn.getAttribute('data-more');
+        }
       });
     });
-
-    var toggle = document.getElementById('awardToggle');
-    if (toggle) {
-      toggle.addEventListener('click', function () {
-        var rest = document.getElementById('awardRest');
-        var open = rest.hasAttribute('hidden');
-        if (open) { rest.removeAttribute('hidden'); }
-        else { rest.setAttribute('hidden', ''); }
-        toggle.setAttribute('aria-expanded', String(open));
-        toggle.textContent = open
-          ? t(CONTENT.ui.collapse)
-          : t(CONTENT.ui.awardsMore) + ' (' + rest.children.length + ')';
-      });
-    }
 
     var toTop = document.getElementById('toTop');
     toTop.addEventListener('click', function () {

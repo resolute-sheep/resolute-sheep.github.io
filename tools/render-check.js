@@ -167,6 +167,12 @@ function check(label, res) {
     if (!html.includes(sel)) problems.push(`缺少 ${sel}`);
   }
 
+  // 折叠控件：按钮与被折叠的宿主必须成对出现
+  const foldBtns = (html.match(/class="fold__btn"/g) || []).length;
+  const foldHosts = (html.match(/class="[^"]*\bfold\b[^"]*"/g) || []).length;
+  if (foldBtns === 0) problems.push('没有任何可折叠控件');
+  if (foldHosts < foldBtns) problems.push(`折叠宿主(${foldHosts}) 少于按钮(${foldBtns})`);
+
   // 目录项与版块必须一一对应，否则高亮永远对不上
   const spyTargets = [...html.matchAll(/data-spy="([^"]+)"/g)].map((m) => m[1]);
   const sectionIds = [...html.matchAll(/<section[^>]*\bid="([^"]+)"/g)].map((m) => m[1]);
@@ -230,6 +236,33 @@ if (/yz\.theme/.test(indexHtml)) indexProblems.push('index.html 还残留主题�
 console.log(`\n[index.html]`);
 console.log(indexProblems.length ? '  ✗ ' + indexProblems.join('\n  ✗ ') : '  ✓ boot 开关正常，已无主题残留');
 ok = indexProblems.length === 0 && ok;
+
+// app.js 里引用的 ui 文案键必须都在 content.js 里有定义，
+// 否则 t() 返回空字符串，按钮会变成一块空白（曾经踩过这个坑）。
+// app.js 里 U 恒为 CONTENT.ui 的局部别名，所以两种写法都要查。
+{
+  const appSrc = fs.readFileSync(path.join(ROOT, 'assets/js/app.js'), 'utf8');
+  const cjsSrc = fs.readFileSync(path.join(ROOT, 'assets/js/content.js'), 'utf8');
+
+  // 先取值再比较，不要用 (?!...) 断言——\s* 能匹配零字符会回溯绕过断言
+  const aliasLeak = [...new Set([...appSrc.matchAll(/\bU\s*=\s*([^;,\n]+)/g)]
+    .map((m) => m[1].trim())
+    .filter((v) => v !== 'CONTENT.ui'))];
+  const used = [...new Set([...appSrc.matchAll(/(?:CONTENT\.ui|U)\.(\w+)/g)].map((m) => m[1]))];
+  const missing = used.filter((k) => !new RegExp(`^\\s*${k}\\s*:`, 'm').test(cjsSrc));
+
+  console.log('\n[文案键]');
+  if (aliasLeak.length) {
+    console.log(`  ! U 被赋成了 CONTENT.ui 以外的东西：${aliasLeak.join(', ')} —— 本检查会失准`);
+  }
+  if (missing.length) {
+    console.log(`  ✗ app.js 引用了 content.js 未定义的键：${missing.join(', ')}`);
+    console.log('    （t() 会返回空字符串，按钮/文字会变空白）');
+    ok = false;
+  } else {
+    console.log(`  ✓ app.js 引用的 ${used.length} 个 ui 文案键全部有定义`);
+  }
+}
 
 const zh = run('zh');
 ok = check('中文', zh) && ok;

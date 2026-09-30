@@ -333,43 +333,54 @@ section:first-of-type { padding-top: 34px; }
 .project__lead { color: var(--text-dim); margin-bottom: 16px; }
 .project__lead:last-child { margin-bottom: 0; }   /* 教育背景卡里它是最后一行，别留一截空白 */
 
-/* ------------------------------------------- 项目卡：默认收起 / 点击展开 */
-/* 收起时只留标题、角色、奖项和一句话简介，读者据此决定要不要展开细节 */
+/* --------------------------------------- 可折叠区块（项目细节 / 学生工作 / 荣誉） */
+/* 用法：宿主元素加 .fold，内部放 .fold__body > .fold__inner，再放一个 .fold__btn。
+   展开时 JS 给宿主加 .is-open。 */
 .project__brief {
   margin: 0; color: var(--text-dim); font-size: .95rem;
 }
-.project__toggle {
+.fold__btn {
   display: inline-flex; align-items: center; gap: 8px;
   margin-left: auto;                 /* 推到与上方日期同一列 */
   font: inherit; font-size: .82rem; font-weight: 600;
   color: var(--accent); background: transparent;
   border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
-  padding: 4px 12px; cursor: pointer;
+  padding: 4px 12px; cursor: pointer; white-space: nowrap;
   transition: border-color var(--dur), background var(--dur), color var(--dur);
 }
-.project__toggle:hover {
+.fold__btn:hover {
   border-color: var(--accent);
   background: var(--accent-soft);
 }
-.project__chev {
+.fold__chev {
   width: 6px; height: 6px; flex: none;
   border-right: 1.6px solid currentColor;
   border-bottom: 1.6px solid currentColor;
   transform: rotate(45deg) translate(-1px, -1px);
   transition: transform .32s var(--ease, cubic-bezier(.2, .7, .3, 1));
 }
-.project.is-open .project__chev { transform: rotate(-135deg) translate(-1px, -1px); }
+.fold.is-open .fold__chev { transform: rotate(-135deg) translate(-1px, -1px); }
 
 /* 用 grid-template-rows 0fr→1fr 做高度动画，不需要 JS 量高度 */
-.project__detail {
+.fold__body {
   display: grid; grid-template-rows: 0fr;
   opacity: 0;
   transition: grid-template-rows .42s var(--ease, cubic-bezier(.2, .7, .3, 1)),
               opacity .3s ease;
 }
-.project.is-open .project__detail { grid-template-rows: 1fr; opacity: 1; }
-.project__detail-inner { overflow: hidden; min-height: 0; }
-.project.is-open .project__detail-inner { padding-top: 18px; }
+.fold.is-open .fold__body { grid-template-rows: 1fr; opacity: 1; }
+.fold__inner { overflow: hidden; min-height: 0; }
+.fold.is-open > .fold__body > .fold__inner { padding-top: 18px; }
+
+/* 荣誉区块：折叠容器在 .entries 内部，需要自己撑开上边距 */
+#awardFold .fold__btn { margin: 14px 0 0; }
+
+/* 学生工作：角色名与展开按钮同一行 */
+.entry__role-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 3px;
+}
+.entry__role-row .entry__role { margin-bottom: 0; }
 
 .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
 .tag {
@@ -542,8 +553,9 @@ section:first-of-type { padding-top: 34px; }
   .card { box-shadow: none; border-color: #bbb; break-inside: avoid; }
   section { padding-top: 18px; break-inside: avoid-page; }
   a { color: inherit; text-decoration: none; }
-  /* 打印时把折叠的项目细节全部展开，否则纸上会缺内容 */
-  .project__toggle { display: none !important; }
-  .project__detail { grid-template-rows: 1fr !important; opacity: 1 !important; }
-  .project__detail-inner { padding-top: 18px !important; }
+  /* 打印时把所有折叠内容展开，否则纸上会缺内容 */
+  .fold__btn { display: none !important; }
+  .fold__body { grid-template-rows: 1fr !important; opacity: 1 !important; }
+  .fold.is-open > .fold__body > .fold__inner { padding-top: 18px !important; }
+  .fold__body > .fold__inner { padding-top: 12px !important; }
 }
