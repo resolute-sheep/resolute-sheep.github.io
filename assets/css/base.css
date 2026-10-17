@@ -422,11 +422,14 @@ section:first-of-type { padding-top: 34px; }
 .scope p { margin: 0; }
 
 /* -------------------------------------------------------------- 研究兴趣 / 技能 */
+/* 研究兴趣只有一个条目，撑满整行会显得空。这里拆成「大数字 + 说明」两栏，
+   让 200 Gbps 成为首屏之后的第一个视觉锚点。 */
 .research-list { display: grid; gap: 12px; }
 .research-item {
-  display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 18px;
-  align-items: start;
-  padding: 22px 24px;
+  display: grid;
+  grid-template-columns: 212px minmax(0, 1fr);
+  gap: 32px;
+  padding: 28px 30px;
   background: var(--surface);
   border: var(--rule); border-radius: var(--radius);
   transition: border-color var(--dur), box-shadow var(--dur), transform var(--dur);
@@ -436,14 +439,33 @@ section:first-of-type { padding-top: 34px; }
   box-shadow: 0 10px 30px rgba(16, 24, 40, .08);
   transform: translateY(-2px);
 }
-.research-item__icon {
-  display: grid; place-items: center;
-  width: 46px; height: 46px; border-radius: 50%;
-  background: var(--accent-soft); color: var(--accent);
-  font-size: 1.15rem; line-height: 1;
+.research-item__key {
+  padding-right: 30px;
+  border-right: 1px solid var(--border);
 }
-.research-item__name { font-size: 1.08rem; font-weight: 680; margin-bottom: 6px; }
-.research-item__desc { margin: 0; color: var(--text-dim); font-size: .94rem; }
+.research-item__num {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 2.15rem; font-weight: 700;
+  line-height: 1.05; letter-spacing: -.025em;
+  color: var(--accent);
+}
+.research-item__cap {
+  display: block; margin-top: 10px;
+  font-size: .72rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-faint);
+}
+.research-item__name { font-size: 1.18rem; font-weight: 680; margin-bottom: 9px; }
+.research-item__desc { margin: 0; color: var(--text-dim); font-size: .97rem; }
+
+@media (max-width: 700px) {
+  .research-item { grid-template-columns: minmax(0, 1fr); gap: 18px; padding: 22px 20px; }
+  .research-item__key {
+    padding-right: 0; padding-bottom: 16px;
+    border-right: 0; border-bottom: 1px solid var(--border);
+  }
+  .research-item__num { font-size: 1.85rem; }
+}
 
 /* 技能同样是"参考数据"，跟荣誉一样用无框表格，不用卡片 */
 .skill-groups { display: grid; gap: 0; border-top: 1px solid var(--border); }

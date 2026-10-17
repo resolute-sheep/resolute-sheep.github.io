@@ -96,10 +96,11 @@ const CONTENT = {
   research: {
     title: { zh: '研究兴趣', en: 'Research Interests' },
     items: [
-      { icon: '◈',
-        name: { zh: '200 Gbps 光电互连接口电路', en: '200 Gbps Optoelectronic Interconnect Interface Circuits' },
-        desc: { zh: '面向 200 Gbps 光电互连接口电路，主要研究其中的 200 Gbps 电芯片，包括高速驱动与接收前端、时钟数据恢复、均衡与信号完整性，以及速率、功耗与面积之间的权衡。',
-                en: '200 Gbps optoelectronic interconnect interface circuits, focusing on the 200 Gbps electrical IC — high-speed driver and receiver front ends, clock and data recovery, equalisation and signal integrity, and the trade-offs between data rate, power and area.' } },
+      { metric: '200 Gbps',
+        caption: { zh: '目标链路速率', en: 'Target link rate' },
+        name: { zh: '光电互连接口电路', en: 'Optoelectronic Interconnect Interface Circuits' },
+        desc: { zh: '面向高速光电互连链路，主要研究其中的 200 Gbps 电芯片——高速驱动与接收前端、时钟数据恢复、均衡与信号完整性，以及速率、功耗与面积之间的权衡。',
+                en: 'High-speed optoelectronic interconnect links, focusing on the 200 Gbps electrical IC — high-speed driver and receiver front ends, clock and data recovery, equalisation and signal integrity, and the trade-offs between data rate, power and area.' } },
     ],
   },
 

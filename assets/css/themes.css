@@ -166,11 +166,11 @@ h1, h2, h3, .hero__name, .section-head__title {
 .entry:hover { background: color-mix(in srgb, var(--accent) 4%, transparent); }
 .entry.is-star .entry__role::before { content: "★ "; color: var(--accent); }
 
-/* 研究兴趣图标：悬停时轻微放大并旋转 */
-.research-item__icon { transition: transform .3s var(--ease), background .3s var(--ease); }
-.research-item:hover .research-item__icon {
-  transform: scale(1.08) rotate(-3deg);
-  background: color-mix(in srgb, var(--accent) 16%, #fff);
+/* 研究兴趣大数字：悬停时轻微上浮，作为首屏之后的视觉锚点 */
+.research-item__num { transition: transform .3s var(--ease), color .3s var(--ease); }
+.research-item:hover .research-item__num {
+  transform: translateX(2px);
+  color: color-mix(in srgb, var(--accent) 78%, #4a86d4);
 }
 
 /* ------------------------------------------------------------------ 按钮 */

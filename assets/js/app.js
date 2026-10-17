@@ -167,13 +167,16 @@
     return '<section id="research">' + sectionHead(R.title) +
       '<div class="research-list">' +
         R.items.map(function (it) {
-          return '<div class="research-item">' +
-            '<div class="research-item__icon" aria-hidden="true">' + esc(it.icon) + '</div>' +
-            '<div>' +
-              '<div class="research-item__name">' + esc(t(it.name)) + '</div>' +
+          return '<article class="research-item">' +
+            '<div class="research-item__key">' +
+              '<span class="research-item__num">' + esc(it.metric) + '</span>' +
+              '<span class="research-item__cap">' + esc(t(it.caption)) + '</span>' +
+            '</div>' +
+            '<div class="research-item__body">' +
+              '<h3 class="research-item__name">' + esc(t(it.name)) + '</h3>' +
               '<p class="research-item__desc">' + esc(t(it.desc)) + '</p>' +
             '</div>' +
-          '</div>';
+          '</article>';
         }).join('') +
       '</div>' +
       '</section>';
