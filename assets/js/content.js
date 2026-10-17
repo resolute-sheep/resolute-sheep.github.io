@@ -44,8 +44,7 @@ const CONTENT = {
     detailMore:  { zh: '展开详情', en: 'Show details' },
     detailLess:  { zh: '收起',     en: 'Collapse' },
     awardsMore:  { zh: '展开其余荣誉', en: 'Show all awards' },
-    footer:      { zh: '本站为静态页面，可用右上角开关切换中英文。',
-                   en: 'Static site — use the switch above to change language.' },
+    updated:     { zh: '最近更新', en: 'Last updated' },
   },
 
   /* -------------------------------------------------------------- 顶部导航栏 */

@@ -177,10 +177,12 @@
   function renderProjects() {
     var P = CONTENT.projects, U = CONTENT.ui;
     return '<section id="projects">' + sectionHead(P.title) +
-      P.items.map(function (p) {
+      P.items.map(function (p, i) {
         var detailId = 'detail-' + p.id;
+        var num = (i + 1 < 10 ? '0' : '') + (i + 1);
         return '<article class="card project fold" data-project="' + esc(p.id) + '">' +
           '<div class="project__top">' +
+            '<span class="project__num" aria-hidden="true">' + num + '</span>' +
             '<h3 class="project__name">' + esc(t(p.name)) + '</h3>' +
             '<span class="project__period">' + esc(t(p.period)) + '</span>' +
           '</div>' +
@@ -197,12 +199,13 @@
           (p.award ? '<div class="project__award">★ ' + esc(t(p.award)) + '</div>' : '') +
           // 收起时只显示这一句，读者据此判断要不要展开
           '<p class="project__brief">' + esc(t(p.brief)) + '</p>' +
+          // 技术栈提到收起状态：扫读时最想先看的就是「用了什么」
+          '<p class="project__stack">' + p.tags.map(function (x) {
+            return esc(t(x));
+          }).join(' · ') + '</p>' +
           '<div class="fold__body" id="' + detailId + '">' +
             '<div class="fold__inner">' +
               '<p class="project__lead">' + esc(t(p.summary)) + '</p>' +
-              '<div class="tags">' + p.tags.map(function (x) {
-                return '<span class="tag">' + esc(t(x)) + '</span>';
-              }).join('') + '</div>' +
               '<div class="block-label">' + esc(t(U.metricLabel)) + '</div>' +
               factGrid(p.metrics, 'metrics') +
               '<div class="scope"><div class="block-label">' + esc(t(U.scopeLabel)) + '</div>' +
@@ -310,9 +313,14 @@
   function renderFooter() {
     var U = CONTENT.ui, S = CONTENT.site;
     var year = new Date().getFullYear();
+    // 发布日期由 tools/deploy-github.ps1 在每次发布时写进 meta，避免手写日期过期
+    var m = document.querySelector('meta[name="site-updated"]');
+    var updated = m ? (m.getAttribute('content') || '').trim() : '';
     return '<footer class="footer">' +
-      '<span>© ' + year + ' ' + esc(t(S.name)) + ' · ' + esc(t(S.nameEn)) + '</span>' +
-      '<span>' + esc(t(U.footer)) + '</span>' +
+      '<span>© ' + year + ' ' + esc(t(S.name)) + ' · ' + esc(t(S.nameEn)) +
+        (updated ? ' · <span class="footer__updated">' + esc(t(U.updated)) + ' ' +
+                   esc(updated) + '</span>' : '') +
+      '</span>' +
       '</footer>' +
       '<button class="to-top" type="button" id="toTop" aria-label="Top">' +
         '<span class="to-top__ring" aria-hidden="true"></span>↑</button>';

@@ -134,12 +134,8 @@ h1, h2, h3, .hero__name, .section-head__title {
 /* 一句话简介收得稍紧，别抢标题 */
 .project__brief { font-size: .95rem; color: var(--text-dim); }
 
-/* 技术标签给一点点蓝调，整页不至于全是灰色 */
-.tag {
-  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
-  border-color: color-mix(in srgb, var(--accent) 17%, var(--border));
-  color: color-mix(in srgb, var(--accent) 68%, var(--text-dim));
-}
+/* 技术栈摘要：等宽小字，收进项目卡时保持克制 */
+.project__stack { color: color-mix(in srgb, var(--accent) 30%, var(--text-faint)); }
 
 /* 指标格：悬停时轻微提亮 */
 .metric, .fact { transition: background .25s var(--ease); }
@@ -148,17 +144,17 @@ h1, h2, h3, .hero__name, .section-head__title {
 .metrics .metric__v { transition: color .25s var(--ease); }
 .metric:hover .metric__v { color: color-mix(in srgb, var(--accent) 82%, #3f7fd6); }
 
-/* 标签与技能：悬停浮起 */
-.tag, .chip {
+/* 技能标签：悬停浮起 */
+.chip {
   transition: transform .2s var(--ease), border-color .2s var(--ease),
               background .2s var(--ease), color .2s var(--ease);
 }
-.tag:hover, .chip:hover {
+.chip:hover {
   transform: translateY(-1px);
   border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
   color: var(--accent);
+  background: var(--accent-soft);
 }
-.chip:hover { background: var(--accent-soft); }
 
 /* 研究兴趣大数字：悬停时轻微上浮，作为首屏之后的视觉锚点 */
 .research-item__num { transition: transform .3s var(--ease), color .3s var(--ease); }

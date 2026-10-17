@@ -128,11 +128,17 @@ if (Test-Path $indexPath) {
         $html,
         'assets/(css|js)/([A-Za-z0-9._-]+\.(?:css|js))(\?v=[0-9a-z]+)?',
         ('assets/$1/$2?v=' + $ver))
+    # 页脚的「最近更新」日期：每次发布改成当天，手写日期就不会过期
+    $today = Get-Date -Format 'yyyy-MM-dd'
+    $newHtml = [regex]::Replace(
+        $newHtml,
+        '(<meta name="site-updated" content=")[^"]*(")',
+        ('${1}' + $today + '${2}'))
     if ($newHtml -ne $html) {
         [System.IO.File]::WriteAllText($indexPath, $newHtml, $enc)
-        Ok "资源版本号 -> ?v=$ver"
+        Ok "资源版本号 -> ?v=$ver，最近更新 -> $today"
     } else {
-        Info "资源版本号未变（?v=$ver）"
+        Info "资源版本号与日期均未变（?v=$ver, $today）"
     }
 }
 
