@@ -226,11 +226,11 @@
     var rest = A.items.slice(LIMIT);
 
     return '<section id="awards">' + sectionHead(A.title) +
-      '<div class="card"><div class="entries" id="awardList">' + head +
+      '<div class="award-list">' + head +
         (rest.length
           ? '<div class="fold" id="awardFold">' +
-              '<div class="fold__body"><div class="fold__inner" id="awardRest">' +
-                rest.map(awardRow).join('') +
+              '<div class="fold__body"><div class="fold__inner">' +
+                '<div id="awardRest">' + rest.map(awardRow).join('') + '</div>' +
               '</div></div>' +
               '<button class="fold__btn" type="button" aria-expanded="false" aria-controls="awardRest">' +
                 '<span class="fold__label">' + esc(t(U.awardsMore)) + ' (' + rest.length + ')</span>' +
@@ -238,13 +238,14 @@
               '</button>' +
             '</div>'
           : '') +
-      '</div></div></section>';
+      '</div></section>';
 
+    // 一条荣誉 = 年 / 名称 / 颁发单位，三列对齐，读起来像一张表
     function awardRow(a) {
-      return '<div class="entry' + (a.star ? ' is-star' : '') + '">' +
-        '<div class="entry__period">' + esc(a.year) + '</div>' +
-        '<div><div class="entry__role">' + esc(t(a.name)) + '</div>' +
-        '<div class="entry__desc">' + esc(t(a.org)) + '</div></div>' +
+      return '<div class="award' + (a.star ? ' is-star' : '') + '">' +
+        '<span class="award__year">' + esc(a.year) + '</span>' +
+        '<span class="award__name">' + esc(t(a.name)) + '</span>' +
+        '<span class="award__org">' + esc(t(a.org)) + '</span>' +
       '</div>';
     }
   }
@@ -252,7 +253,7 @@
   function renderSkills() {
     var S = CONTENT.skills;
     return '<section id="skills">' + sectionHead(S.title) +
-      '<div class="card"><div class="skill-groups">' +
+      '<div class="skill-groups">' +
         S.groups.map(function (g) {
           return '<div class="skill-group">' +
             '<div class="skill-group__name">' + esc(t(g.name)) + '</div>' +
@@ -261,7 +262,7 @@
             }).join('') + '</div>' +
           '</div>';
         }).join('') +
-      '</div></div></section>';
+      '</div></section>';
   }
 
   function renderService() {
