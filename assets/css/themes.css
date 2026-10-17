@@ -161,11 +161,6 @@ h1, h2, h3, .hero__name, .section-head__title {
 }
 .chip:hover { background: var(--accent-soft); }
 
-/* 时间线条目：悬停时整行轻微染色 */
-.entry { transition: background .25s var(--ease); }
-.entry:hover { background: color-mix(in srgb, var(--accent) 4%, transparent); }
-.entry.is-star .entry__role::before { content: "★ "; color: var(--accent); }
-
 /* 研究兴趣大数字：悬停时轻微上浮，作为首屏之后的视觉锚点 */
 .research-item__num { transition: transform .3s var(--ease), color .3s var(--ease); }
 .research-item:hover .research-item__num {

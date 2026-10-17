@@ -271,32 +271,30 @@
   function renderService() {
     var S = CONTENT.service, U = CONTENT.ui;
     return '<section id="service">' + sectionHead(S.title) +
-      '<div class="card"><div class="entries">' +
+      '<div class="card"><div class="timeline">' +
         S.items.map(function (s, i) {
           var hasPoints = !!(s.points && s.points.length);
           var bodyId = 'svc-' + i;
-          return '<div class="entry entry--rich' + (hasPoints ? ' fold' : '') + '">' +
-            '<div class="entry__period">' + esc(t(s.period)) + '</div>' +
-            '<div>' +
-              '<div class="entry__role-row">' +
-                '<span class="entry__role">' + esc(t(s.role)) + '</span>' +
-                (hasPoints
-                  ? '<button class="fold__btn" type="button" aria-expanded="false" ' +
-                      'aria-controls="' + bodyId + '">' +
-                      '<span class="fold__label">' + esc(t(U.detailMore)) + '</span>' +
-                      '<span class="fold__chev" aria-hidden="true"></span>' +
-                    '</button>'
-                  : '') +
-              '</div>' +
-              '<div class="entry__desc">' + esc(t(s.desc)) + '</div>' +
+          return '<div class="tl-item' + (hasPoints ? ' fold' : '') + '">' +
+            '<div class="tl-item__head">' +
+              '<span class="tl-item__period">' + esc(t(s.period)) + '</span>' +
               (hasPoints
-                ? '<div class="fold__body" id="' + bodyId + '"><div class="fold__inner">' +
-                    '<ul class="points points--service">' + s.points.map(function (p) {
-                      return '<li>' + esc(t(p)) + '</li>';
-                    }).join('') + '</ul>' +
-                  '</div></div>'
+                ? '<button class="fold__btn" type="button" aria-expanded="false" ' +
+                    'aria-controls="' + bodyId + '">' +
+                    '<span class="fold__label">' + esc(t(U.detailMore)) + '</span>' +
+                    '<span class="fold__chev" aria-hidden="true"></span>' +
+                  '</button>'
                 : '') +
             '</div>' +
+            '<div class="tl-item__role">' + esc(t(s.role)) + '</div>' +
+            '<div class="tl-item__desc">' + esc(t(s.desc)) + '</div>' +
+            (hasPoints
+              ? '<div class="fold__body" id="' + bodyId + '"><div class="fold__inner">' +
+                  '<ul class="points points--service">' + s.points.map(function (p) {
+                    return '<li>' + esc(t(p)) + '</li>';
+                  }).join('') + '</ul>' +
+                '</div></div>'
+              : '') +
           '</div>';
         }).join('') +
       '</div></div></section>';

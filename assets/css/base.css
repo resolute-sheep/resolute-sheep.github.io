@@ -372,15 +372,8 @@ section:first-of-type { padding-top: 34px; }
 .fold__inner { overflow: hidden; min-height: 0; }
 .fold.is-open > .fold__body > .fold__inner { padding-top: 18px; }
 
-/* 荣誉区块：折叠容器在 .entries 内部，需要自己撑开上边距 */
+/* 荣誉区块：折叠容器在列表内部，需要自己撑开上边距 */
 #awardFold .fold__btn { margin: 14px 0 0; }
-
-/* 学生工作：角色名与展开按钮同一行 */
-.entry__role-row {
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-  margin-bottom: 3px;
-}
-.entry__role-row .entry__role { margin-bottom: 0; }
 
 .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
 .tag {
@@ -483,17 +476,41 @@ section:first-of-type { padding-top: 34px; }
   background: var(--surface-2); border: var(--rule); color: var(--text-dim);
 }
 
-/* ------------------------------------------------------------------ 时间线条目 */
-.entries { display: flex; flex-direction: column; gap: 2px; }
-.entry {
-  display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 14px;
-  padding: 14px 0; border-top: var(--rule);
+/* -------------------------------------------------------------- 经历（时间线） */
+/* 学生工作是「一段时间里做过什么」，用竖轴 + 节点比平铺的条目更像经历线。 */
+.timeline { position: relative; padding-left: 26px; }
+.timeline::before {
+  content: ""; position: absolute; left: 5px; top: 8px; bottom: 10px;
+  width: 1px;
+  /* 原来用渐变，但在两个节点之间就淡没了；改成恒定色，轴才连得起来 */
+  background: color-mix(in srgb, var(--accent) 22%, var(--border));
 }
-.entry:first-child { border-top: 0; }
-.entry__period { font-family: var(--font-mono); font-size: .78rem; color: var(--text-faint); padding-top: 4px; }
-.entry__role { font-weight: 620; margin-bottom: 3px; }
-.entry__desc { font-size: .91rem; color: var(--text-dim); }
-.entry.is-star .entry__role::before { content: "★ "; color: var(--accent); }
+.tl-item { position: relative; padding-bottom: 24px; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-item::before {
+  content: ""; position: absolute; left: -26px; top: 5px;
+  width: 11px; height: 11px; border-radius: 50%;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 2px solid color-mix(in srgb, var(--accent) 50%, var(--border));
+  transition: border-color .25s var(--ease, cubic-bezier(.2, .7, .3, 1)),
+              background .25s var(--ease, cubic-bezier(.2, .7, .3, 1));
+}
+.tl-item:hover::before {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+}
+.tl-item__head {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 22px; margin-bottom: 2px;
+}
+.tl-item__period {
+  font-family: var(--font-mono); font-size: .76rem;
+  color: var(--text-faint); letter-spacing: .01em;
+}
+.tl-item__head .fold__btn { margin: 0 0 0 auto; }
+.tl-item__role { font-size: 1.02rem; font-weight: 660; margin-bottom: 5px; }
+.tl-item__desc { font-size: .94rem; color: var(--text-dim); }
 
 /* ------------------------------------------------------------ 荣誉（无卡片） */
 /* 荣誉是一串事实，不是 "作品"，所以不给它卡片外壳——三列对齐成一张表，
@@ -586,7 +603,6 @@ section:first-of-type { padding-top: 34px; }
     border-left: var(--rule); white-space: nowrap; background: var(--surface);
   }
   .toc a.is-active { border-color: var(--accent); border-left-color: var(--accent); }
-  .entry { grid-template-columns: minmax(0, 1fr); gap: 4px; }
   .skill-group { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .brand__sub { display: none; }
 }
