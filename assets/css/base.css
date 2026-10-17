@@ -19,8 +19,8 @@
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
                "DejaVu Sans Mono", monospace;
 
-  --fs-body: 16px;
-  --lh-body: 1.75;
+  --fs-body: 17.5px;               /* 788px 栏宽 ÷ 17.5 ≈ 45 字/行，比 16px 时的 49 字好读 */
+  --lh-body: 1.72;
   --fs-h1: clamp(2rem, 1.4rem + 2.6vw, 3.4rem);
   --fs-h2: clamp(1.35rem, 1.1rem + 1vw, 1.85rem);
   --fs-h3: 1.12rem;
@@ -186,7 +186,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 main { min-width: 0; padding-bottom: 40px; }
 
-section { padding: 44px 0 8px; }
+section { padding: 36px 0 8px; }
 section:first-of-type { padding-top: 34px; }
 
 .section-head { margin-bottom: 22px; }
@@ -309,7 +309,7 @@ section:first-of-type { padding-top: 34px; }
 }
 
 /* 项目卡 */
-.project { margin-bottom: 18px; }
+.project { margin-bottom: 14px; }
 .project__top {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 14px;
   margin-bottom: 8px;
@@ -457,7 +457,7 @@ section:first-of-type { padding-top: 34px; }
 /* ------------------------------------------------------------------ 时间线条目 */
 .entries { display: flex; flex-direction: column; gap: 2px; }
 .entry {
-  display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: 18px;
+  display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 14px;
   padding: 14px 0; border-top: var(--rule);
 }
 .entry:first-child { border-top: 0; }
@@ -507,10 +507,15 @@ section:first-of-type { padding-top: 34px; }
 
 /* ---------------------------------------------------------------- 响应式 */
 @media (max-width: 900px) {
-  .shell { grid-template-columns: minmax(0, 1fr); }
+  /* gap 是为左右两栏设计的间距；单列堆叠后它会变成上下间距，
+     在目录和正文之间凭空多出 44px。这里置零，改由 sidebar 自己给下边距。 */
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .sidebar {
-    position: static; padding: 14px 0 0;
+    position: static; padding: 14px 0 0; margin-bottom: 18px;
     overflow-x: auto; -webkit-overflow-scrolling: touch;
+    /* 右侧渐隐，提示这一行可以横向滑动 */
+    -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent 100%);
+            mask-image: linear-gradient(90deg, #000 88%, transparent 100%);
   }
   .sidebar__title { display: none; }
   .toc { flex-direction: row; gap: 6px; padding-bottom: 6px; }
@@ -525,7 +530,7 @@ section:first-of-type { padding-top: 34px; }
 }
 
 @media (max-width: 620px) {
-  :root { --fs-body: 15.5px; }
+  :root { --fs-body: 16.5px; }
   section { padding-top: 34px; }
   .card { padding: 20px 18px; }
   .topbar { padding-inline: 14px; gap: 8px; flex-wrap: wrap; }

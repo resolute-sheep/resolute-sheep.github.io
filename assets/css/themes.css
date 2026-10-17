@@ -75,14 +75,28 @@ h1, h2, h3, .hero__name, .section-head__title {
 .idcard__bar { background: transparent; border-bottom: 1px solid var(--border); }
 
 /* -------------------------------------------------------------- 章节标题 */
-.section-head { border-bottom: 2px solid var(--text); padding-bottom: 8px; }
-.section-head__title { font-size: 1.5rem; }
+/* 只保留一条线。原来 .section-head 上压了一条 2px 实底边框，标题右侧又有一条
+   渐变细线，两者相距 24px，看起来像「双下划线」。现在把细线绝对定位成
+   唯一的底边线，边框删掉。 */
+.section-head { margin-bottom: 26px; }
+.section-head__title {
+  position: relative;
+  display: block;                 /* base.css 里是 flex，这里要改成块级 */
+  font-size: 1.45rem;
+  padding-bottom: 11px;
+}
 .section-head__rule {
+  position: absolute; left: 0; right: 0; bottom: 0;
   height: 2px; border-radius: 2px;
-  background: linear-gradient(90deg, var(--accent), transparent);
+  /* 起点用固定像素而不是百分比：788px 宽的 86% 已经是 678px，
+     按百分比铺色会让线在 1/5 处就淡没了。 */
+  background: linear-gradient(90deg,
+    var(--accent) 0,
+    color-mix(in srgb, var(--accent) 30%, var(--border)) 170px,
+    color-mix(in srgb, var(--accent) 13%, var(--border)) 100%);
   transform-origin: left center;
 }
-/* 进入视口时把标题右侧的细线「画」出来 */
+/* 进入视口时把标题下的细线「画」出来 */
 .js-reveal .reveal.is-in .section-head__rule {
   animation: ruleIn .62s .04s var(--ease) both;
 }
@@ -99,20 +113,34 @@ h1, h2, h3, .hero__name, .section-head__title {
   transform: translateY(-2px);
 }
 
-/* 项目卡左侧的强调条：默认 2px 灰，悬停变 4px 强调色 */
+/* 项目卡左侧的强调条：静息时就是可见的淡蓝，悬停加粗变实色。
+   原来静息是 2px 的 --border（#e4e7ec），在白底上几乎看不见，等于白做。 */
 .card.project {
   position: relative;
   padding: 24px 26px 24px 30px;
 }
 .card.project::before {
   content: ""; position: absolute; left: 0; top: 0; bottom: 0;
-  width: 2px; background: var(--border);
+  width: 3px;
+  background: color-mix(in srgb, var(--accent) 26%, var(--surface));
   border-radius: var(--radius) 0 0 var(--radius);
   transition: width .3s var(--ease), background .3s var(--ease);
 }
 .card.project:hover::before { width: 4px; background: var(--accent); }
 .project { border-top: var(--rule); padding-top: 20px; }
 .project:first-child { border-top: 0; padding-top: 0; }
+
+/* 项目标题比正文明显重一档，卡片才有主次 */
+.project__name { font-size: 1.26rem; font-weight: 700; letter-spacing: -.01em; }
+/* 一句话简介收得稍紧，别抢标题 */
+.project__brief { font-size: .95rem; color: var(--text-dim); }
+
+/* 技术标签给一点点蓝调，整页不至于全是灰色 */
+.tag {
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 17%, var(--border));
+  color: color-mix(in srgb, var(--accent) 68%, var(--text-dim));
+}
 
 /* 指标格：悬停时轻微提亮 */
 .metric, .fact { transition: background .25s var(--ease); }
