@@ -25,12 +25,12 @@ const CONTENT = {
   /* -------------------------------------------------- 首屏右侧的身份信息卡 */
   idcard: {
     title: { zh: '基本信息', en: 'At a glance' },
+    /* 只留三行。专业与所在地在简介、教育背景、联系方式里都已出现，
+       放在首屏会让这张卡比左边的姓名块还重，主次反了。 */
     rows: [
       { k: { zh: '本科',   en: 'Undergrad' }, v: { zh: '南京大学 集成电路学院', en: 'School of Integrated Circuits, Nanjing University' } },
-      { k: { zh: '专业',   en: 'Major' },     v: { zh: '集成电路设计与集成系统', en: 'IC Design & Integrated Systems' } },
       { k: { zh: '去向',   en: 'Next' },      v: { zh: '复旦大学 集成电路与微纳电子创新学院（直博）', en: 'School of Integrated Circuits and Micro-Nano Electronics, Fudan University (direct PhD)' } },
       { k: { zh: '研究方向', en: 'Research' }, v: { zh: '200 Gbps 光电互连接口电路 · 电芯片', en: '200 Gbps optoelectronic interconnect · electrical IC' } },
-      { k: { zh: '所在地', en: 'Based in' },  v: { zh: '江苏 苏州', en: 'Suzhou, China' } },
     ],
   },
 

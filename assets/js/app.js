@@ -88,29 +88,20 @@
   function renderTopbar() {
     var S = CONTENT.site, U = CONTENT.ui;
     return '' +
-      '<header class="topbar">' +
+      '<header class="topbar"><div class="topbar__inner">' +
         '<div class="brand">' +
           '<span class="brand__name">' + esc(t(S.name)) + '</span>' +
-          '<span class="brand__sub">' + esc(t(S.title)) + '</span>' +
         '</div>' +
-        '<div class="controls">' +
-          '<button class="lang-btn" type="button" id="langBtn" title="' + esc(t(U.langTitle)) + '" ' +
-            'aria-label="' + esc(t(U.langTitle)) + '">' + esc(t(U.langLabel)) + '</button>' +
-        '</div>' +
-      '</header>';
-  }
-
-  function renderSidebar() {
-    var U = CONTENT.ui;
-    return '' +
-      '<aside class="sidebar">' +
-        '<div class="sidebar__title">' + esc(t(U.menu)) + '</div>' +
         '<nav class="toc" aria-label="' + esc(t(U.menu)) + '">' +
           CONTENT.nav.map(function (n) {
             return '<a href="#' + n.id + '" data-spy="' + n.id + '">' + esc(t(n.label)) + '</a>';
           }).join('') +
         '</nav>' +
-      '</aside>';
+        '<div class="controls">' +
+          '<button class="lang-btn" type="button" id="langBtn" title="' + esc(t(U.langTitle)) + '" ' +
+            'aria-label="' + esc(t(U.langTitle)) + '">' + esc(t(U.langLabel)) + '</button>' +
+        '</div>' +
+      '</div></header>';
   }
 
   function renderHero() {
@@ -149,17 +140,18 @@
   function renderEducation() {
     var E = CONTENT.education;
     return '<section id="education">' + sectionHead(E.title) +
-      E.entries.map(function (e) {
-        return '<article class="card project">' +
-          '<div class="project__top">' +
-            '<h3 class="project__name">' + esc(t(e.school)) + '</h3>' +
-            '<span class="project__period">' + esc(t(e.period)) + '</span>' +
-          '</div>' +
-          '<div class="project__meta"><span class="project__role">' + esc(t(e.degree)) + '</span></div>' +
-          (e.focus ? '<p class="project__lead">' + esc(t(e.focus)) + '</p>' : '') +
-        '</article>';
-      }).join('') +
-      '</section>';
+      '<div class="card"><div class="timeline">' +
+        E.entries.map(function (e) {
+          return '<div class="tl-item">' +
+            '<div class="tl-item__head">' +
+              '<span class="tl-item__period">' + esc(t(e.period)) + '</span>' +
+            '</div>' +
+            '<div class="tl-item__role">' + esc(t(e.school)) + '</div>' +
+            '<div class="tl-item__degree">' + esc(t(e.degree)) + '</div>' +
+            (e.focus ? '<p class="tl-item__focus">' + esc(t(e.focus)) + '</p>' : '') +
+          '</div>';
+        }).join('') +
+      '</div></div></section>';
   }
 
   function renderResearch() {
@@ -336,7 +328,7 @@
     if (desc) desc.setAttribute('content', t(CONTENT.about.paragraphs[0]).slice(0, 150));
 
     document.getElementById('app').innerHTML =
-      renderChrome() + renderTopbar() + '<div class="shell">' + renderSidebar() + '<main>' +
+      renderChrome() + renderTopbar() + '<div class="shell"><main>' +
       renderHero() + renderAbout() + renderEducation() + renderResearch() +
       renderProjects() + renderAwards() + renderSkills() + renderService() +
       renderContact() + '</main></div>' + renderFooter();
@@ -410,20 +402,9 @@
 
   /** 量出吸顶栏的实际高度，写回 --anchor-offset，供 scroll-padding-top 与判定线共用 */
   function measureAnchor() {
-    var off = 0;
+    // 目录现在就在顶栏里，顶栏高度即全部吸顶高度
     var tb = document.querySelector('.topbar');
-    if (tb) off = tb.getBoundingClientRect().height;
-
-    var nav = document.querySelector('.sidebar');
-    if (nav && getComputedStyle(nav).position === 'sticky') {
-      var root = getComputedStyle(document.documentElement);
-      var sidebarW = parseFloat(root.getPropertyValue('--sidebar-w')) || 0;
-      // 只有「不占左列、且吸顶」的侧栏（作品集主题的胶囊导航）才压在内容上方；
-      // 学术主题的侧栏在左边单独一列，不遮挡正文
-      if (sidebarW === 0) {
-        off = Math.max(off, nav.getBoundingClientRect().bottom);
-      }
-    }
+    var off = tb ? tb.getBoundingClientRect().height : 0;
     return Math.round(off + 24);
   }
 

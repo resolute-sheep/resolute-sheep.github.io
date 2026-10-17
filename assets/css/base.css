@@ -5,9 +5,7 @@
 
 /* ------------------------------------------------------------------ 变量默认值 */
 :root {
-  --maxw: 1140px;
-  --sidebar-w: 0px;
-  --gap: 28px;
+  --maxw: 840px;
   --radius: 10px;
   --radius-sm: 6px;
   --dur: .22s;
@@ -125,23 +123,23 @@ ul { margin: 0; padding: 0; list-style: none; }
 .js-reveal .reveal.is-in { opacity: 1; transform: none; }
 
 /* ---------------------------------------------------------------------- 顶栏 */
+/* 目录从左侧栏搬进了顶栏：省下 252px 的空白左栏，顶栏中间也不再空。 */
 .topbar {
   position: sticky; top: 0; z-index: 50;
-  display: flex; align-items: center; gap: 16px;
-  padding: 10px max(20px, calc((100vw - var(--maxw)) / 2));
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: saturate(180%) blur(12px);
   border-bottom: var(--rule);
 }
+.topbar__inner {
+  display: flex; align-items: center; gap: 22px;
+  max-width: var(--maxw); margin: 0 auto;
+  padding: 9px max(20px, env(safe-area-inset-left)) 9px max(20px, env(safe-area-inset-right));
+}
 
 .brand { display: flex; align-items: baseline; gap: 9px; min-width: 0; }
 .brand__name { font-weight: 700; letter-spacing: .01em; white-space: nowrap; }
-.brand__sub {
-  font-size: var(--fs-small); color: var(--text-faint);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
 
-.controls { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.controls { display: flex; align-items: center; gap: 10px; }
 
 .lang-btn {
   appearance: none; cursor: pointer; font: inherit;
@@ -159,30 +157,17 @@ ul { margin: 0; padding: 0; list-style: none; }
   max-width: var(--maxw);
   margin: 0 auto;
   padding: 0 max(20px, env(safe-area-inset-left)) 0 max(20px, env(safe-area-inset-right));
-  display: grid;
-  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
-  gap: var(--gap);
-  align-items: start;
 }
 
-.sidebar {
-  position: sticky; top: 68px;
-  padding: 30px 0 40px;
-  font-size: var(--fs-small);
-}
-.sidebar__title {
-  font-size: .7rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: var(--tracking-label); color: var(--text-faint);
-  margin-bottom: 10px;
-}
-.toc { display: flex; flex-direction: column; gap: 2px; }
+.toc { display: flex; align-items: center; gap: 2px; margin-left: auto; }
 .toc a {
-  display: block; padding: 5px 0 5px 12px;
-  color: var(--text-dim); border-left: 2px solid transparent;
-  transition: color var(--dur), border-color var(--dur);
+  display: block; padding: 6px 10px;
+  font-size: var(--fs-small); white-space: nowrap;
+  color: var(--text-dim); border-radius: 6px;
+  transition: color var(--dur), background var(--dur);
 }
-.toc a:hover { color: var(--accent); text-decoration: none; border-left-color: var(--border-strong); }
-.toc a.is-active { color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+.toc a:hover { color: var(--accent); background: var(--accent-soft); text-decoration: none; }
+.toc a.is-active { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
 
 main { min-width: 0; padding-bottom: 40px; }
 
@@ -479,14 +464,16 @@ section:first-of-type { padding-top: 34px; }
 /* -------------------------------------------------------------- 经历（时间线） */
 /* 学生工作是「一段时间里做过什么」，用竖轴 + 节点比平铺的条目更像经历线。 */
 .timeline { position: relative; padding-left: 26px; }
-.timeline::before {
-  content: ""; position: absolute; left: 5px; top: 8px; bottom: 10px;
-  width: 1px;
-  /* 原来用渐变，但在两个节点之间就淡没了；改成恒定色，轴才连得起来 */
-  background: color-mix(in srgb, var(--accent) 22%, var(--border));
-}
 .tl-item { position: relative; padding-bottom: 24px; }
 .tl-item:last-child { padding-bottom: 0; }
+/* 竖轴由每个条目自己画：从本节点的圆点往下接到下一个节点。
+   最后一个条目不画，轴就停在最后一个圆点，不会拖出一条「还有内容」的尾巴。 */
+.tl-item::after {
+  content: ""; position: absolute; left: -21px; top: 18px; bottom: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--accent) 22%, var(--border));
+}
+.tl-item:last-child::after { display: none; }
 .tl-item::before {
   content: ""; position: absolute; left: -26px; top: 5px;
   width: 11px; height: 11px; border-radius: 50%;
@@ -511,6 +498,16 @@ section:first-of-type { padding-top: 34px; }
 .tl-item__head .fold__btn { margin: 0 0 0 auto; }
 .tl-item__role { font-size: 1.02rem; font-weight: 660; margin-bottom: 5px; }
 .tl-item__desc { font-size: .94rem; color: var(--text-dim); }
+/* 教育背景里那行「▸ 学位 / 学历」，和学生工作的纯描述区分开 */
+.tl-item__degree { font-size: .94rem; color: var(--text-dim); }
+.tl-item__degree::before {
+  content: "▸"; color: var(--text-faint);
+  margin-right: .5em; font-size: .85em;
+}
+.tl-item__focus {
+  margin: 9px 0 0; font-size: .92rem; line-height: 1.7;
+  color: var(--text-dim);
+}
 
 /* ------------------------------------------------------------ 荣誉（无卡片） */
 /* 荣誉是一串事实，不是 "作品"，所以不给它卡片外壳——三列对齐成一张表，
@@ -586,32 +583,30 @@ section:first-of-type { padding-top: 34px; }
 
 /* ---------------------------------------------------------------- 响应式 */
 @media (max-width: 900px) {
-  /* gap 是为左右两栏设计的间距；单列堆叠后它会变成上下间距，
-     在目录和正文之间凭空多出 44px。这里置零，改由 sidebar 自己给下边距。 */
-  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .sidebar {
-    position: static; padding: 14px 0 0; margin-bottom: 18px;
+  /* 目录从顶栏右侧换到自己一整行，横向可滑 */
+  .topbar__inner { flex-wrap: wrap; gap: 8px 12px; padding-block: 8px; }
+  .brand { flex: 1 1 auto; }
+  .controls { margin-left: auto; }
+  .toc {
+    order: 3; width: 100%; margin-left: 0;
+    gap: 6px; padding-bottom: 2px;
     overflow-x: auto; -webkit-overflow-scrolling: touch;
     /* 右侧渐隐，提示这一行可以横向滑动 */
     -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent 100%);
             mask-image: linear-gradient(90deg, #000 88%, transparent 100%);
   }
-  .sidebar__title { display: none; }
-  .toc { flex-direction: row; gap: 6px; padding-bottom: 6px; }
   .toc a {
     padding: 5px 13px; border: var(--rule); border-radius: 999px;
-    border-left: var(--rule); white-space: nowrap; background: var(--surface);
+    background: var(--surface);
   }
-  .toc a.is-active { border-color: var(--accent); border-left-color: var(--accent); }
+  .toc a.is-active { border-color: var(--accent); }
   .skill-group { grid-template-columns: minmax(0, 1fr); gap: 6px; }
-  .brand__sub { display: none; }
 }
 
 @media (max-width: 620px) {
   :root { --fs-body: 16.5px; }
   section { padding-top: 34px; }
   .card { padding: 20px 18px; }
-  .topbar { padding-inline: 14px; gap: 8px; flex-wrap: wrap; }
   .controls { gap: 6px; }
   .seg__btn { padding: 5px 10px; }
   .project__period { margin-left: 0; width: 100%; }
@@ -630,7 +625,7 @@ section:first-of-type { padding-top: 34px; }
 
 /* ---------------------------------------------------------------------- 打印 */
 @media print {
-  .topbar, .sidebar, .to-top, .footer { display: none !important; }
+  .topbar, .to-top, .footer { display: none !important; }
   body { font-size: 11pt; }
   .shell { display: block; max-width: none; }
   .card { box-shadow: none; border-color: #bbb; break-inside: avoid; }
